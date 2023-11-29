@@ -1,4 +1,6 @@
-﻿namespace PontoTech
+﻿using PontoTech.Pages;
+namespace PontoTech
+
 {
     public partial class App : Application
     {
@@ -6,7 +8,7 @@
         {
             InitializeComponent();
 
-            MainPage = new AppShell();
+            MainPage = new NavigationPage(new HomePage());
         }
     }
 }

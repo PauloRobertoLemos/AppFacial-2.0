@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BackgroundColor="#ffffff"
+             x:Class="PontoTech.Pages.PanelUserPage"
+             Shell.NavBarIsVisible="False"
+             NavigationPage.HasNavigationBar="False"
+             Title="PanelUserPage">
+
+    <StackLayout VerticalOptions="FillAndExpand">
+        <Label Text="Controle de ponto"
+               HorizontalOptions="Center"
+               FontSize="20"
+               FontAttributes="Bold"
+               TextColor="#028CD4"
+               Margin="16, 32, 16, 15"/>
+
+        <!-- Label para exibir a hora -->
+        <Label x:Name="lblHoraAtual"
+               HorizontalOptions="Center"
+               FontSize="24"
+               FontAttributes="Bold"
+               TextColor="Black"
+               Margin="0, 5, 0, 20" />
+
+        <!-- Grid horários -->
+        <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="85" />
+                    <ColumnDefinition Width="85" />
+                    <ColumnDefinition Width="85" />
+                    <ColumnDefinition Width="85" />
+                </Grid.ColumnDefinitions>
+
+                <Frame Grid.Row="0" Grid.Column="0" WidthRequest="82" HeightRequest="90" BackgroundColor="#F1F4FF" CornerRadius="5" BorderColor="White"  Padding="2" Margin="5">
+                    <StackLayout VerticalOptions="Center">
+                        <Label Text="Entrada" FontSize="15" FontAttributes="Bold" TextColor="#5C5C5C" HorizontalOptions="Center" />
+                        <Label Text="08:00" FontSize="13" FontAttributes="None" TextColor="#5C5C5C" HorizontalOptions="Center" />
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="0" Grid.Column="1" WidthRequest="82" HeightRequest="90" BackgroundColor="#F1F4FF" CornerRadius="5" BorderColor="White" Padding="2" Margin="5">
+                    <StackLayout VerticalOptions="Center">
+                        <Label Text="Pausa" FontSize="15" FontAttributes="Bold" TextColor="#5C5C5C" HorizontalOptions="Center" />
+                        <Label Text="12:00" FontSize="13" FontAttributes="None" TextColor="#5C5C5C" HorizontalOptions="Center" />
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="0" Grid.Column="2" WidthRequest="82" HeightRequest="90" BackgroundColor="#F1F4FF" CornerRadius="5" BorderColor="White" Padding="2" Margin="5">
+                    <StackLayout VerticalOptions="Center">
+                        <Label Text="Retorno" FontSize="15" FontAttributes="Bold" TextColor="#5C5C5C" HorizontalOptions="Center" />
+                        <Label Text="12:30" FontSize="13" FontAttributes="None" TextColor="#5C5C5C" HorizontalOptions="Center" />
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="0" Grid.Column="3" WidthRequest="82" HeightRequest="90" BackgroundColor="#F1F4FF" CornerRadius="5" BorderColor="White" Padding="2" Margin="5">
+                    <StackLayout VerticalOptions="Center">
+                        <Label Text="Saída" FontSize="15" FontAttributes="Bold" TextColor="#5C5C5C" HorizontalOptions="Center" />
+                        <Label Text="16:00" FontSize="13" FontAttributes="None" TextColor="#5C5C5C" HorizontalOptions="Center" />
+                    </StackLayout>
+                </Frame>
+            </Grid>
+        </StackLayout>
+
+
+        <!-- Grid opções de pontos -->
+        <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Botões superiores -->
+                <Frame Grid.Row="0" Grid.Column="0" WidthRequest="160" HeightRequest="175" BackgroundColor="#509953" BorderColor="White" CornerRadius="5" Margin="5">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="EntradaFrame_Tapped" />
+                    </Frame.GestureRecognizers>
+                    <StackLayout>
+                        <Label Text="Entrada" FontSize="16" FontAttributes="Bold" TextColor="White" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0" />
+                        <Image Source="ico_entrada.swg" HeightRequest="35" WidthRequest="35" VerticalOptions="End" HorizontalOptions="End" Margin="0,70,0,5" />
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="0" Grid.Column="1" WidthRequest="160" HeightRequest="175" BackgroundColor="#CCA030" BorderColor="White" CornerRadius="5" Margin="5">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="PausaFrame_Tapped" />
+                    </Frame.GestureRecognizers>
+                    <StackLayout>
+                        <Label Text="Pausa" FontSize="16" FontAttributes="Bold" TextColor="White" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0" />
+                        <Image Source="ico_pausa.swg" HeightRequest="35" WidthRequest="35" VerticalOptions="End" HorizontalOptions="End" Margin="0,70,0,5" />
+                    </StackLayout>
+                </Frame>
+
+                <!-- Botões inferiores -->
+                <Frame Grid.Row="1" Grid.Column="0" WidthRequest="160" HeightRequest="175" BackgroundColor="#416999" BorderColor="White" CornerRadius="5" Margin="5">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="RetornoFrame_Tapped" />
+                    </Frame.GestureRecognizers>
+                    <StackLayout>
+                        <Label Text="Retorno" FontSize="16" FontAttributes="Bold" TextColor="White" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0" />
+                        <Image Source="ico_retorno.swg" HeightRequest="35" WidthRequest="35" VerticalOptions="End" HorizontalOptions="End" Margin="0,70,0,5" />
+                    </StackLayout>
+                </Frame>
+
+                <Frame Grid.Row="1" Grid.Column="1" WidthRequest="160" HeightRequest="175" BackgroundColor="#B45454" BorderColor="White" CornerRadius="5" Margin="5">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="SaidaFrame_Tapped" />
+                    </Frame.GestureRecognizers>
+                    <StackLayout>
+                        <Label Text="Saída" FontSize="16" FontAttributes="Bold" TextColor="White" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0" />
+                        <Image Source="ico_saida.swg" HeightRequest="35" WidthRequest="35" VerticalOptions="End" HorizontalOptions="End" Margin="0,70,0,5" />
+                    </StackLayout>
+                </Frame>
+            </Grid>
+        </StackLayout>
+  
+        <Label x:Name="NomeDoUser" Text="José da Silva" FontSize="14" TextColor="Black" VerticalOptions="Center" HorizontalOptions="Center"/>
+        <Button x:Name="BtnSair" Clicked="BtnSair_Clicked" Text="Sair da minha conta" FontSize="14" FontAttributes="Bold" TextColor="#B45454" BackgroundColor="White" BorderColor="#B45454" BorderWidth="1" WidthRequest="170" HeightRequest="35" Padding="5" Margin="0, 10, 0, 40"/>
+
+    </StackLayout>
+</ContentPage>

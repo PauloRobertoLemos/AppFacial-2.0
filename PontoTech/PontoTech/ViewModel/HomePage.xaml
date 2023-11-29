@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             BackgroundColor="#ffffff"
+             Shell.NavBarIsVisible="False"
+             NavigationPage.HasNavigationBar="False"
+             x:Class="PontoTech.Pages.HomePage"
+             Title="HomePage">
+    
+    <ScrollView>
+        <VerticalStackLayout
+           Spacing="25"
+           Padding="30,0"
+           VerticalOptions="Center">
+
+            <Image
+               Source="person.svg"
+               SemanticProperties.Description="Ponto Tech"
+               HeightRequest="200"
+               HorizontalOptions="Center" />
+
+            <Label
+               Text="Gerencie seu tempo de forma inteligente"
+               HorizontalTextAlignment="Center"
+               VerticalTextAlignment="Center"
+               FontAttributes="Bold"
+               FontSize="24"
+               TextColor="#028CD4"
+               HorizontalOptions="Center" />
+
+            <Label
+               Text="Registre facilmente seu horário de entrada e saída"
+               SemanticProperties.Description="Registre facilmente seu horário de entrada e saída"
+               HorizontalTextAlignment="Center"
+               VerticalTextAlignment="Center"
+               FontSize="18"
+               TextColor="#1F1F1F"
+               HorizontalOptions="Center" />
+
+            <StackLayout Orientation="Horizontal" Spacing="5" Padding="35">
+                <Button
+               x:Name="BtnEntrar"
+               Text="Entrar"
+               FontAttributes="Bold"
+               CornerRadius="7"
+               FontSize="14"
+               HeightRequest="40"
+               WidthRequest="130"
+               BackgroundColor="#028CD4"
+               Clicked="BtnEntrar_Clicked"
+               HorizontalOptions="Center" />
+                <Button
+               x:Name="BtnRegistrar"
+               Text="Registrar"
+               FontAttributes="Bold"
+               CornerRadius="7"
+               FontSize="14"
+               HeightRequest="40"
+               WidthRequest="130"
+               TextColor="#1F1F1F"
+               BackgroundColor="#ffffff"
+               Clicked="BtnRegistrar_Clicked"
+               HorizontalOptions="Center" />
+            </StackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
