@@ -53,22 +53,28 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="ViewModel\CapturaPage.xaml">
+	  <Compile Update="Mvvm\View\HomePageView.xaml.cs">
+	    <DependentUpon>HomePageView.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Mvvm\View\CapturaPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="ViewModel\HomePage.xaml">
+	  <MauiXaml Update="Mvvm\View\HomePageView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="ViewModel\LoginUserPage.xaml">
+	  <MauiXaml Update="Mvvm\View\LoginUserPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="ViewModel\PanelUserPage.xaml">
+	  <MauiXaml Update="Mvvm\View\PanelUserPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="ViewModel\RecoverPass.xaml">
+	  <MauiXaml Update="Mvvm\View\RecoverPass.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="ViewModel\RegisterUserPage.xaml">
+	  <MauiXaml Update="Mvvm\View\RegisterUserPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

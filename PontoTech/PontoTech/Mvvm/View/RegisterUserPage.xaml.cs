@@ -91,6 +91,7 @@ namespace PontoTech.Pages
         private void BtnEntrar_Clicked(object sender, EventArgs e)
         {
             Navigation.PushAsync(new LoginUserPage());
+            
         }
     }
 }

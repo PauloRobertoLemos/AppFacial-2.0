@@ -4,7 +4,7 @@
              BackgroundColor="#ffffff"
              Shell.NavBarIsVisible="False"
              NavigationPage.HasNavigationBar="False"
-             x:Class="PontoTech.Pages.HomePage"
+             x:Class="PontoTech.Pages.HomePageView"
              Title="HomePage">
     
     <ScrollView>
@@ -47,7 +47,7 @@
                HeightRequest="40"
                WidthRequest="130"
                BackgroundColor="#028CD4"
-               Clicked="BtnEntrar_Clicked"
+               Command="{Binding BtnEntrarCommand}"
                HorizontalOptions="Center" />
                 <Button
                x:Name="BtnRegistrar"
@@ -59,7 +59,7 @@
                WidthRequest="130"
                TextColor="#1F1F1F"
                BackgroundColor="#ffffff"
-               Clicked="BtnRegistrar_Clicked"
+               Command="{Binding BtnRegistrarCommand}"
                HorizontalOptions="Center" />
             </StackLayout>
 
