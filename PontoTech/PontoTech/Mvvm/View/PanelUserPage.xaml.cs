@@ -1,15 +1,18 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
+using PontoTech.Mvvm.ViewModels;
 
-namespace PontoTech.Pages
+namespace PontoTech.Mvvm.View
 {
     public partial class PanelUserPage : ContentPage
     {
         public PanelUserPage()
         {
             InitializeComponent();
+            BindingContext = new PanelUserPageViewModel();
             AtualizarHora();
+            
         }
 
         private async void AtualizarHora()

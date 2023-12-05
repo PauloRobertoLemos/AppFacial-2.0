@@ -4,9 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PontoTech.Model
+namespace PontoTech.Mvvm.Models
 {
-    internal class Entradas
+    public class Entradas
     {
+        private DateTime HoraDia;
+        private String Marcador;
+
+        public Entradas(String marcador) {
+            this.HoraDia = DateTime.Now;
+            this.Marcador = marcador;
+        }
     }
 }

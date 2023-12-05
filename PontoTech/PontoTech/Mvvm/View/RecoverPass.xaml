@@ -4,7 +4,7 @@
              BackgroundColor="#ffffff"
              Shell.NavBarIsVisible="False"
              NavigationPage.HasNavigationBar="False"
-             x:Class="PontoTech.Pages.RecoverPass"
+             x:Class="PontoTech.Mvvm.View.RecoverPass"
              Title="RecoverPass">
     <ScrollView>
         <VerticalStackLayout
@@ -68,7 +68,8 @@
             HeightRequest="45"
             WidthRequest="320"
             BackgroundColor="#028CD4"
-            Clicked="BtnAlterarSenha_Clicked"
+            Command="{Binding BtnAlterarSenha}"
+            CommandParameter="{Binding Source={x:Reference txtCpf,txtEmail,txtPassword,txtPasswordConf},Path=Text}"
             HorizontalOptions="Center"
             Margin="10"/>
 
@@ -82,7 +83,7 @@
             WidthRequest="320"
             BackgroundColor="#ffffff"
             TextColor="#2C2C2C"
-            Clicked="BtnEntrar_Clicked"
+            Command="{Binding BtnEntrar}"
             HorizontalOptions="Center"
             Margin="10"/>
 

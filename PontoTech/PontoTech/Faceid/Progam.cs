@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.CognitiveServices.Vision.Face;
 using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
 
-namespace FaceQuickstart
+/*namespace FaceQuickstart
 {
     class Program
     {
@@ -44,7 +44,7 @@ namespace FaceQuickstart
          *	AUTHENTICATE
          *	Uses subscription key and region to create a client.
          */
-        public static IFaceClient Authenticate(string endpoint, string key)
+       /* public static IFaceClient Authenticate(string endpoint, string key)
         {
             return new FaceClient(new ApiKeyServiceClientCredentials(key)) { Endpoint = endpoint };
         }
@@ -82,7 +82,7 @@ namespace FaceQuickstart
          * a list of Person objects that each face might belong to. Returned Person objects are wrapped as Candidate objects, 
          * which have a prediction confidence value.
          */
-        public static async Task IdentifyInPersonGroup(IFaceClient client, string url, string recognitionModel)
+      /*  public static async Task IdentifyInPersonGroup(IFaceClient client, string url, string recognitionModel)
         {
             Console.WriteLine("========IDENTIFY FACES========");
             Console.WriteLine();
@@ -185,4 +185,4 @@ namespace FaceQuickstart
             Console.WriteLine();
         }
     }
-}
+}*/

@@ -1,4 +1,4 @@
-﻿using PontoTech.Pages;
+﻿using PontoTech.Mvvm.View;
 namespace PontoTech
 
 {
@@ -9,6 +9,7 @@ namespace PontoTech
             InitializeComponent();
 
             MainPage = new NavigationPage(new HomePageView());
+            
         }
     }
 }

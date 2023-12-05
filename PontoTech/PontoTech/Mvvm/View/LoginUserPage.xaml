@@ -4,7 +4,7 @@
              BackgroundColor="#ffffff"
              Shell.NavBarIsVisible="False"
              NavigationPage.HasNavigationBar="False"
-             x:Class="PontoTech.Pages.LoginUserPage"
+             x:Class="PontoTech.Mvvm.View.LoginUserPage"
              Title="LoginUserPage">
 
     <ScrollView>
@@ -39,13 +39,13 @@
             Margin="16"
             Padding="16">
 
-        <Entry
+        <Entry 
+            Text="{Binding email}"
             Placeholder="Digite seu email"
-            x:Name="txtEmail"
             TextColor="#5C5C5C"/>
         <Entry
+            Text="{Binding senha}"
             Placeholder="Digite sua senha"
-            x:Name="txtPassword"
             FontSize="14"
             TextColor="#5C5C5C"
             IsPassword ="true"/>
@@ -70,7 +70,7 @@
             HeightRequest="45"
             WidthRequest="320"
             BackgroundColor="#028CD4"
-            Clicked="BtnUserLogin_Clicked"
+            Command="{Binding BtnUserLogin}"
             HorizontalOptions="Center"
             Margin="10"/>
         
@@ -84,7 +84,7 @@
             WidthRequest="320"
             BackgroundColor="#ffffff"
             TextColor="#2C2C2C"
-            Clicked="BtnUserRegister_Clicked"
+            Command="{Binding BtnUserRegister}"
             HorizontalOptions="Center"
             Margin="10"/>
 

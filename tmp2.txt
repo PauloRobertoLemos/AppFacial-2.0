@@ -1,0 +1,1358 @@
+commit 2ce231c0603d7e3f3b3b8110b16176435f140a28
+Merge: c560a9a e9aa792 d7fa113
+Author: DhomynyFariasDeSouza <dhomyryan@outlook.com>
+Date:   Tue Dec 5 17:53:43 2023 -0300
+
+    On master: Fazendo check-out de master
+    
+    Realizando stash das alteraÃ§Ãµes nÃ£o confirmadas antes de fazer um check-out de 'master'. Aplique ou remova da pilha essas alteraÃ§Ãµes mais recentes para restaurÃ¡-las.
+
+diff --cc PontoTech/PontoTech/App.xaml.cs
+index f3ebb24,f3ebb24,0000000..4d06ad6
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/App.xaml.cs
++++ b/PontoTech/PontoTech/App.xaml.cs
+@@@@ -1,14 -1,14 -1,0 +1,15 @@@@
+-- ï»¿using PontoTech.Pages;
++++ï»¿using PontoTech.Mvvm.View;
+  +namespace PontoTech
+  +
+  +{
+  +    public partial class App : Application
+  +    {
+  +        public App()
+  +        {
+  +            InitializeComponent();
+  +
+  +            MainPage = new NavigationPage(new HomePageView());
++++            
+  +        }
+  +    }
+  +}
+diff --cc PontoTech/PontoTech/Faceid/Progam.cs
+index 9b4b7fb,9b4b7fb,0000000..054cc26
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Faceid/Progam.cs
++++ b/PontoTech/PontoTech/Faceid/Progam.cs
+@@@@ -1,188 -1,188 -1,0 +1,188 @@@@
+  +ï»¿using System;
+  +using System.Collections.Generic;
+  +using System.IO;
+  +using System.Linq;
+  +using System.Threading;
+  +using System.Threading.Tasks;
+  +
+  +using Microsoft.Azure.CognitiveServices.Vision.Face;
+  +using Microsoft.Azure.CognitiveServices.Vision.Face.Models;
+  +
+-- namespace FaceQuickstart
++++/*namespace FaceQuickstart
+  +{
+  +    class Program
+  +    {
+  +        static string personGroupId = Guid.NewGuid().ToString();
+  +
+  +        // URL path for the images.
+  +        const string IMAGE_BASE_URL = "https://raw.githubusercontent.com/Azure-Samples/cognitive-services-sample-data-files/master/Face/images/";
+  +
+  +        // From your Face subscription in the Azure portal, get your subscription key and endpoint.
+  +        const string SUBSCRIPTION_KEY = Environment.GetEnvironmentVariable("VISION_KEY");
+  +        const string ENDPOINT = Environment.GetEnvironmentVariable("VISION_ENDPOINT");
+  +
+  +
+  +        static void Main(string[] args)
+  +        {
+  +            // Recognition model 4 was released in 2021 February.
+  +            // It is recommended since its accuracy is improved
+  +            // on faces wearing masks compared with model 3,
+  +            // and its overall accuracy is improved compared
+  +            // with models 1 and 2.
+  +            const string RECOGNITION_MODEL4 = RecognitionModel.Recognition04;
+  +
+  +            // Authenticate.
+  +            IFaceClient client = Authenticate(ENDPOINT, SUBSCRIPTION_KEY);
+  +
+  +            // Identify - recognize a face(s) in a person group (a person group is created in this example).
+  +            IdentifyInPersonGroup(client, IMAGE_BASE_URL, RECOGNITION_MODEL4).Wait();
+  +
+  +            Console.WriteLine("End of quickstart.");
+  +        }
+  +
+  +        /*
+  +         *	AUTHENTICATE
+  +         *	Uses subscription key and region to create a client.
+  +         */
+--         public static IFaceClient Authenticate(string endpoint, string key)
++++       /* public static IFaceClient Authenticate(string endpoint, string key)
+  +        {
+  +            return new FaceClient(new ApiKeyServiceClientCredentials(key)) { Endpoint = endpoint };
+  +        }
+  +
+  +        // Detect faces from image url for recognition purposes. This is a helper method for other functions in this quickstart.
+  +        // Parameter `returnFaceId` of `DetectWithUrlAsync` must be set to `true` (by default) for recognition purposes.
+  +        // Parameter `FaceAttributes` is set to include the QualityForRecognition attribute. 
+  +        // Recognition model must be set to recognition_03 or recognition_04 as a result.
+  +        // Result faces with insufficient quality for recognition are filtered out. 
+  +        // The field `faceId` in returned `DetectedFace`s will be used in Face - Face - Verify and Face - Identify.
+  +        // It will expire 24 hours after the detection call.
+  +        private static async Task<List<DetectedFace>> DetectFaceRecognize(IFaceClient faceClient, string url, string recognition_model)
+  +        {
+  +            // Detect faces from image URL. Since only recognizing, use the recognition model 1.
+  +            // We use detection model 3 because we are not retrieving attributes.
+  +            IList<DetectedFace> detectedFaces = await faceClient.Face.DetectWithUrlAsync(url, recognitionModel: recognition_model, detectionModel: DetectionModel.Detection03, returnFaceAttributes: new List<FaceAttributeType> { FaceAttributeType.QualityForRecognition });
+  +            List<DetectedFace> sufficientQualityFaces = new List<DetectedFace>();
+  +            foreach (DetectedFace detectedFace in detectedFaces)
+  +            {
+  +                var faceQualityForRecognition = detectedFace.FaceAttributes.QualityForRecognition;
+  +                if (faceQualityForRecognition.HasValue && (faceQualityForRecognition.Value >= QualityForRecognition.Medium))
+  +                {
+  +                    sufficientQualityFaces.Add(detectedFace);
+  +                }
+  +            }
+  +            Console.WriteLine($"{detectedFaces.Count} face(s) with {sufficientQualityFaces.Count} having sufficient quality for recognition detected from image `{Path.GetFileName(url)}`");
+  +
+  +            return sufficientQualityFaces.ToList();
+  +        }
+  +
+  +        /*
+  +         * IDENTIFY FACES
+  +         * To identify faces, you need to create and define a person group.
+  +         * The Identify operation takes one or several face IDs from DetectedFace or PersistedFace and a PersonGroup and returns 
+  +         * a list of Person objects that each face might belong to. Returned Person objects are wrapped as Candidate objects, 
+  +         * which have a prediction confidence value.
+  +         */
+--         public static async Task IdentifyInPersonGroup(IFaceClient client, string url, string recognitionModel)
++++      /*  public static async Task IdentifyInPersonGroup(IFaceClient client, string url, string recognitionModel)
+  +        {
+  +            Console.WriteLine("========IDENTIFY FACES========");
+  +            Console.WriteLine();
+  +
+  +            // Create a dictionary for all your images, grouping similar ones under the same key.
+  +            Dictionary<string, string[]> personDictionary =
+  +                new Dictionary<string, string[]>
+  +                    { { "Family1-Dad", new[] { "Family1-Dad1.jpg", "Family1-Dad2.jpg" } },
+  +                      { "Family1-Mom", new[] { "Family1-Mom1.jpg", "Family1-Mom2.jpg" } },
+  +                      { "Family1-Son", new[] { "Family1-Son1.jpg", "Family1-Son2.jpg" } },
+  +                      { "Family1-Daughter", new[] { "Family1-Daughter1.jpg", "Family1-Daughter2.jpg" } },
+  +                      { "Family2-Lady", new[] { "Family2-Lady1.jpg", "Family2-Lady2.jpg" } },
+  +                      { "Family2-Man", new[] { "Family2-Man1.jpg", "Family2-Man2.jpg" } }
+  +                    };
+  +            // A group photo that includes some of the persons you seek to identify from your dictionary.
+  +            string sourceImageFileName = "identification1.jpg";
+  +
+  +            // Create a person group. 
+  +            Console.WriteLine($"Create a person group ({personGroupId}).");
+  +            await client.PersonGroup.CreateAsync(personGroupId, personGroupId, recognitionModel: recognitionModel);
+  +            // The similar faces will be grouped into a single person group person.
+  +            foreach (var groupedFace in personDictionary.Keys)
+  +            {
+  +                // Limit TPS
+  +                await Task.Delay(250);
+  +                Person person = await client.PersonGroupPerson.CreateAsync(personGroupId: personGroupId, name: groupedFace);
+  +                Console.WriteLine($"Create a person group person '{groupedFace}'.");
+  +
+  +                // Add face to the person group person.
+  +                foreach (var similarImage in personDictionary[groupedFace])
+  +                {
+  +                    Console.WriteLine($"Check whether image is of sufficient quality for recognition");
+  +                    IList<DetectedFace> detectedFaces1 = await client.Face.DetectWithUrlAsync($"{url}{similarImage}",
+  +                        recognitionModel: recognitionModel,
+  +                        detectionModel: DetectionModel.Detection03,
+  +                        returnFaceAttributes: new List<FaceAttributeType> { FaceAttributeType.QualityForRecognition });
+  +                    bool sufficientQuality = true;
+  +                    foreach (var face1 in detectedFaces1)
+  +                    {
+  +                        var faceQualityForRecognition = face1.FaceAttributes.QualityForRecognition;
+  +                        //  Only "high" quality images are recommended for person enrollment
+  +                        if (faceQualityForRecognition.HasValue && (faceQualityForRecognition.Value != QualityForRecognition.High))
+  +                        {
+  +                            sufficientQuality = false;
+  +                            break;
+  +                        }
+  +                    }
+  +
+  +                    if (!sufficientQuality)
+  +                    {
+  +                        continue;
+  +                    }
+  +
+  +                    // add face to the person group
+  +                    Console.WriteLine($"Add face to the person group person({groupedFace}) from image `{similarImage}`");
+  +                    PersistedFace face = await client.PersonGroupPerson.AddFaceFromUrlAsync(personGroupId, person.PersonId,
+  +                        $"{url}{similarImage}", similarImage);
+  +                }
+  +            }
+  +
+  +            // Start to train the person group.
+  +            Console.WriteLine();
+  +            Console.WriteLine($"Train person group {personGroupId}.");
+  +            await client.PersonGroup.TrainAsync(personGroupId);
+  +
+  +            // Wait until the training is completed.
+  +            while (true)
+  +            {
+  +                await Task.Delay(1000);
+  +                var trainingStatus = await client.PersonGroup.GetTrainingStatusAsync(personGroupId);
+  +                Console.WriteLine($"Training status: {trainingStatus.Status}.");
+  +                if (trainingStatus.Status == TrainingStatusType.Succeeded) { break; }
+  +            }
+  +            Console.WriteLine();
+  +
+  +            List<Guid> sourceFaceIds = new List<Guid>();
+  +            // Detect faces from source image url.
+  +            List<DetectedFace> detectedFaces = await DetectFaceRecognize(client, $"{url}{sourceImageFileName}", recognitionModel);
+  +
+  +            // Add detected faceId to sourceFaceIds.
+  +            foreach (var detectedFace in detectedFaces) { sourceFaceIds.Add(detectedFace.FaceId.Value); }
+  +
+  +            // Identify the faces in a person group. 
+  +            var identifyResults = await client.Face.IdentifyAsync(sourceFaceIds, personGroupId);
+  +
+  +            foreach (var identifyResult in identifyResults)
+  +            {
+  +                if (identifyResult.Candidates.Count == 0)
+  +                {
+  +                    Console.WriteLine($"No person is identified for the face in: {sourceImageFileName} - {identifyResult.FaceId},");
+  +                    continue;
+  +                }
+  +                Person person = await client.PersonGroupPerson.GetAsync(personGroupId, identifyResult.Candidates[0].PersonId);
+  +                Console.WriteLine($"Person '{person.Name}' is identified for the face in: {sourceImageFileName} - {identifyResult.FaceId}," +
+  +                    $" confidence: {identifyResult.Candidates[0].Confidence}.");
+  +
+  +                VerifyResult verifyResult = await client.Face.VerifyFaceToPersonAsync(identifyResult.FaceId, person.PersonId, personGroupId);
+  +                Console.WriteLine($"Verification result: is a match? {verifyResult.IsIdentical}. confidence: {verifyResult.Confidence}");
+  +            }
+  +            Console.WriteLine();
+  +        }
+  +    }
+-- }
++++}*/
+diff --cc PontoTech/PontoTech/Mvvm/Models/Entradas.cs
+index fd1b1b8,fd1b1b8,0000000..b2bd391
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/Models/Entradas.cs
++++ b/PontoTech/PontoTech/Mvvm/Models/Entradas.cs
+@@@@ -1,12 -1,12 -1,0 +1,19 @@@@
+  +ï»¿using System;
+  +using System.Collections.Generic;
+  +using System.Linq;
+  +using System.Text;
+  +using System.Threading.Tasks;
+  +
+-- namespace PontoTech.Model
++++namespace PontoTech.Mvvm.Models
+  +{
+--     internal class Entradas
++++    public class Entradas
+  +    {
++++        private DateTime HoraDia;
++++        private String Marcador;
++++
++++        public Entradas(String marcador) {
++++            this.HoraDia = DateTime.Now;
++++            this.Marcador = marcador;
++++        }
+  +    }
+  +}
+diff --cc PontoTech/PontoTech/Mvvm/Models/Funcionario.cs
+index 7012b68,7012b68,0000000..128c3e8
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/Models/Funcionario.cs
++++ b/PontoTech/PontoTech/Mvvm/Models/Funcionario.cs
+@@@@ -1,12 -1,12 -1,0 +1,39 @@@@
+-- ï»¿using System;
++++ï»¿
++++using System;
++++using System.Collections;
+  +using System.Collections.Generic;
+  +using System.Linq;
+  +using System.Text;
+  +using System.Threading.Tasks;
+  +
+  +namespace PontoTech.Mvvm.Models
+  +{
+--     internal class Funcionario
+--     {
++++    public class Funcionario
++++    {  public String nome { get { return nome;}set { } }
++++       public String Cpf { get { return Cpf;}set { } }
++++       public String Email { get { return Email;}set { } }
++++       public String Senha { get { return Senha;} set { } }
++++       public List<Entradas> entradas { get; set; }
++++
++++       public Funcionario(String nome, String Cpf, String email, String senha)
++++       {
++++            this.nome = nome;
++++            this.Cpf = Cpf;
++++            this.Email = email;
++++            this.Senha = senha;
++++            this.entradas = new List<Entradas>();
++++       }
++++
++++       public void AdicionarEntrada (String marcador)
++++        {
++++            this.entradas.Add(new Entradas(marcador));
++++        }
++++
++++        public override string ToString()
++++        {
++++            return $"Nome:{nome}\n Cpf:{Cpf}\n Email:{Email}\n Senha:{Senha}";
++++        }
+  +    }
++++
++++    
+  +}
+diff --cc PontoTech/PontoTech/Mvvm/View/CapturaPage.xaml
+index b720252,b720252,0000000..98e884b
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/CapturaPage.xaml
++++ b/PontoTech/PontoTech/Mvvm/View/CapturaPage.xaml
+@@@@ -1,49 -1,49 -1,0 +1,49 @@@@
+  +<?xml version="1.0" encoding="utf-8" ?>
+  +<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  +             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+--              x:Class="PontoTech.Pages.CapturaPage"
++++             x:Class="PontoTech.Mvvm.View.CapturaPage"
+  +             Shell.NavBarIsVisible="False"
+  +             NavigationPage.HasNavigationBar="False"
+  +             BackgroundColor="#EFEFEF"
+  +             Title="CapturaPage">
+  +
+  +    <StackLayout VerticalOptions="FillAndExpand">
+  +        <Label Text="Captura de ponto"
+  +               HorizontalOptions="Center"
+  +               FontSize="24"
+  +               FontAttributes="Bold"
+  +               TextColor="#028CD4"
+  +               Margin="16, 50, 16, 16"/>
+  +        <Label
+  +            Text="Certifique-se de estar em um ambiente bem iluminado para obter uma captura precisa com Face ID."
+  +            VerticalOptions="Center" 
+  +            HorizontalOptions="Center"  
+  +            FontSize="14"
+  +            FontAttributes="Bold"
+  +            TextColor="#2C2C2C"
+  +            Margin="20, 0, 20, 0"/>
+  +
+  +        <!-- Aqui uma previa da camera do celular para fazer a captura -->
+  +        <Image x:Name="CapturedImage"
+  +               Aspect="AspectFill"
+  +               VerticalOptions="CenterAndExpand"
+  +               HorizontalOptions="Center"
+  +               HeightRequest="350"
+  +               WidthRequest="320"
+  +               BackgroundColor="LightGray"/>
+  +
+  +        <Button
+  +            x:Name="BtnCapturar"
+  +            Text="Capturar"
+  +            FontAttributes="Bold"
+  +            CornerRadius="7"
+  +            FontSize="14"
+  +            HeightRequest="45"
+  +            WidthRequest="320"
+  +            BackgroundColor="#028CD4"
+--             Clicked="BtnCapturar_Clicked"
++++            Command="{Binding BtnCapturarCommand}"
+  +            HorizontalOptions="Center"
+  +            Margin="10, 0, 10, 50"/>
+  +
+  +    </StackLayout>
+  +</ContentPage>
+diff --cc PontoTech/PontoTech/Mvvm/View/CapturaPage.xaml.cs
+index 6d5f8bc,6d5f8bc,0000000..985db35
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/CapturaPage.xaml.cs
++++ b/PontoTech/PontoTech/Mvvm/View/CapturaPage.xaml.cs
+@@@@ -1,19 -1,19 -1,0 +1,16 @@@@
+  +using Microsoft.Maui.Controls;
++++using PontoTech.Mvvm.ViewModels;
+  +using System;
+  +using System.Threading.Tasks;
+  +
+-- namespace PontoTech.Pages
++++namespace PontoTech.Mvvm.View
+  +{
+  +    public partial class CapturaPage : ContentPage
+  +    {
+  +        public CapturaPage()
+  +        {
+  +            InitializeComponent();
+--         }
+-- 
+--         private void BtnCapturar_Clicked(object sender, EventArgs e)
+--         {
+--             
++++            BindingContext = new CapturaPageViewModel();
+  +        }
+  +    }
+  +}
+diff --cc PontoTech/PontoTech/Mvvm/View/HomePageView.xaml
+index c126275,c126275,0000000..1ffcebb
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/HomePageView.xaml
++++ b/PontoTech/PontoTech/Mvvm/View/HomePageView.xaml
+@@@@ -1,68 -1,68 -1,0 +1,68 @@@@
+  +<?xml version="1.0" encoding="utf-8" ?>
+  +<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  +             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  +             BackgroundColor="#ffffff"
+  +             Shell.NavBarIsVisible="False"
+  +             NavigationPage.HasNavigationBar="False"
+--              x:Class="PontoTech.Pages.HomePageView"
++++             x:Class="PontoTech.Mvvm.View.HomePageView"
+  +             Title="HomePage">
+  +    
+  +    <ScrollView>
+  +        <VerticalStackLayout
+  +           Spacing="25"
+  +           Padding="30,0"
+  +           VerticalOptions="Center">
+  +
+  +            <Image
+  +               Source="person.svg"
+  +               SemanticProperties.Description="Ponto Tech"
+  +               HeightRequest="200"
+  +               HorizontalOptions="Center" />
+  +
+  +            <Label
+  +               Text="Gerencie seu tempo de forma inteligente"
+  +               HorizontalTextAlignment="Center"
+  +               VerticalTextAlignment="Center"
+  +               FontAttributes="Bold"
+  +               FontSize="24"
+  +               TextColor="#028CD4"
+  +               HorizontalOptions="Center" />
+  +
+  +            <Label
+  +               Text="Registre facilmente seu horÃ¡rio de entrada e saÃ­da"
+  +               SemanticProperties.Description="Registre facilmente seu horÃ¡rio de entrada e saÃ­da"
+  +               HorizontalTextAlignment="Center"
+  +               VerticalTextAlignment="Center"
+  +               FontSize="18"
+  +               TextColor="#1F1F1F"
+  +               HorizontalOptions="Center" />
+  +
+  +            <StackLayout Orientation="Horizontal" Spacing="5" Padding="35">
+  +                <Button
+  +               x:Name="BtnEntrar"
+  +               Text="Entrar"
+  +               FontAttributes="Bold"
+  +               CornerRadius="7"
+  +               FontSize="14"
+  +               HeightRequest="40"
+  +               WidthRequest="130"
+  +               BackgroundColor="#028CD4"
+--                Command="{Binding BtnEntrarCommand}"
++++               Clicked="BtnEntrar_Clicked"
+  +               HorizontalOptions="Center" />
+  +                <Button
+  +               x:Name="BtnRegistrar"
+  +               Text="Registrar"
+  +               FontAttributes="Bold"
+  +               CornerRadius="7"
+  +               FontSize="14"
+  +               HeightRequest="40"
+  +               WidthRequest="130"
+  +               TextColor="#1F1F1F"
+  +               BackgroundColor="#ffffff"
+--                Command="{Binding BtnRegistrarCommand}"
++++               Clicked="BtnRegistrar_Clicked"
+  +               HorizontalOptions="Center" />
+  +            </StackLayout>
+  +
+  +        </VerticalStackLayout>
+  +    </ScrollView>
+  +</ContentPage>
+diff --cc PontoTech/PontoTech/Mvvm/View/HomePageView.xaml.cs
+index 940c920,940c920,0000000..6785c5a
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/HomePageView.xaml.cs
++++ b/PontoTech/PontoTech/Mvvm/View/HomePageView.xaml.cs
+@@@@ -1,15 -1,15 -1,0 +1,26 @@@@
+  +using PontoTech.Mvvm.ViewModels;
+  +
+-- namespace PontoTech.Pages;
++++namespace PontoTech.Mvvm.View;
+  +
+  +
+  +public partial class HomePageView : ContentPage
+  +{
+  +    public HomePageView()
+  +	{
+  +		InitializeComponent();
+-- 		BindingContext = new HomePageViewModel();
+  +	}
+  +
+--    
++++    private void BtnEntrar_Clicked(object sender, EventArgs e)
++++    {
++++        Navigation.PushAsync(new LoginUserPage());
++++
++++    }
++++
++++    private void BtnRegistrar_Clicked(object sender, EventArgs e)
++++    {
++++
++++        Navigation.PushAsync(new RegisterUserPage());
++++
++++    }
++++
+  +}
+diff --cc PontoTech/PontoTech/Mvvm/View/LoginUserPage.xaml
+index 8e977aa,8e977aa,0000000..22e4b01
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/LoginUserPage.xaml
++++ b/PontoTech/PontoTech/Mvvm/View/LoginUserPage.xaml
+@@@@ -1,94 -1,94 -1,0 +1,94 @@@@
+  +<?xml version="1.0" encoding="utf-8" ?>
+  +<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  +             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  +             BackgroundColor="#ffffff"
+  +             Shell.NavBarIsVisible="False"
+  +             NavigationPage.HasNavigationBar="False"
+--              x:Class="PontoTech.Pages.LoginUserPage"
++++             x:Class="PontoTech.Mvvm.View.LoginUserPage"
+  +             Title="LoginUserPage">
+  +
+  +    <ScrollView>
+  +        <VerticalStackLayout
+  +            VerticalOptions="Center">
+  +
+  +            <VerticalStackLayout
+  +                VerticalOptions="Center"
+  +                
+  +                Spacing="15"
+  +                Padding="16">
+  +                
+  +                <Label 
+  +                    Text="Fazer Login"
+  +                    VerticalOptions="Center" 
+  +                    HorizontalOptions="Center"
+  +                    FontSize="24"
+  +                    FontAttributes="Bold"
+  +                    TextColor="#028CD4"/>
+  +                <Label 
+  +                    Text="Seja bem vindo ao seu ponto digital"
+  +    
+  +                    VerticalOptions="Center" 
+  +                    HorizontalOptions="Center"
+  +                    FontSize="18"
+  +                    FontAttributes="Bold"
+  +                    TextColor="#2C2C2C"/>
+  +            </VerticalStackLayout>
+  +                
+  +    
+  +        <StackLayout VerticalOptions="CenterAndExpand"
+  +            Margin="16"
+  +            Padding="16">
+  +
+--         <Entry
++++        <Entry 
++++            Text="{Binding email}"
+  +            Placeholder="Digite seu email"
+--             x:Name="txtEmail"
+  +            TextColor="#5C5C5C"/>
+  +        <Entry
++++            Text="{Binding senha}"
+  +            Placeholder="Digite sua senha"
+--             x:Name="txtPassword"
+  +            FontSize="14"
+  +            TextColor="#5C5C5C"
+  +            IsPassword ="true"/>
+  +         <Label 
+  +            x:Name="RecuperarSenha"
+  +            Text="Esqueceu a senha?"
+  +            HorizontalOptions="End"
+  +            FontSize="14"
+  +            FontAttributes="Bold"
+  +            TextColor="#028CD4"
+  +            Margin="10">
+  +                <Label.GestureRecognizers>
+  +                    <TapGestureRecognizer Tapped="RecuperarSenhaClicked" />
+  +                </Label.GestureRecognizers>
+  +                </Label>
+  +         <Button
+  +            x:Name="BtnUserLogin"
+  +            Text="Entrar"
+  +            FontAttributes="Bold"
+  +            CornerRadius="7"
+  +            FontSize="14"
+  +            HeightRequest="45"
+  +            WidthRequest="320"
+  +            BackgroundColor="#028CD4"
+--             Clicked="BtnUserLogin_Clicked"
++++            Command="{Binding BtnUserLogin}"
+  +            HorizontalOptions="Center"
+  +            Margin="10"/>
+  +        
+  +        <Button
+  +            x:Name="BtnUserRegister"
+  +            Text="Criar nova conta"
+  +            FontAttributes="Bold"
+  +            CornerRadius="7"
+  +            FontSize="14"
+  +            HeightRequest="45"
+  +            WidthRequest="320"
+  +            BackgroundColor="#ffffff"
+  +            TextColor="#2C2C2C"
+--             Clicked="BtnUserRegister_Clicked"
++++            Command="{Binding BtnUserRegister}"
+  +            HorizontalOptions="Center"
+  +            Margin="10"/>
+  +
+  +        </StackLayout>
+  +        </VerticalStackLayout>
+  +    </ScrollView>
+  +</ContentPage>
+diff --cc PontoTech/PontoTech/Mvvm/View/LoginUserPage.xaml.cs
+index e9183bb,e9183bb,0000000..dceec48
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/LoginUserPage.xaml.cs
++++ b/PontoTech/PontoTech/Mvvm/View/LoginUserPage.xaml.cs
+@@@@ -1,51 -1,51 -1,0 +1,20 @@@@
+-- namespace PontoTech.Pages;
++++using PontoTech.Mvvm.ViewModels;
++++
++++namespace PontoTech.Mvvm.View;
+  +
+  +public partial class LoginUserPage : ContentPage
+  +{
+  +
+  +    public LoginUserPage()
+  +	{
+-- 		InitializeComponent();
++++        InitializeComponent();
++++        BindingContext = new LoginUserPageViewModel();
+  +	}
+  +
+--     private async void BtnUserLogin_Clicked(object sender, EventArgs e)
+--     {
+--         await ValidateLogin();
+--     }
+-- 
+--     private async Task ValidateLogin()
+--     {
+--         string email = txtEmail.Text;
+--         string password = txtPassword.Text;
+-- 
+--         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+--         {
+--             await DisplayAlert("Erro", "O endereço de email e senha são obrigatórios.", "OK");
+--             return;
+--         }
+-- 
+--         // implementar a conexao com o banco de dados aqui
+--         if (email == "email" && password == "password")
+--         {
+--             // Credenciais corretas, redirecione para o painel do usuário
+--             await Navigation.PushAsync(new PanelUserPage());
+--         }
+--         else
+--         {
+--             // Credenciais inválidas, exiba uma mensagem de erro
+--             await DisplayAlert("Erro", "Credenciais inválidas. Tente novamente.", "OK");
+--         }
+--     }
++++   
+  +
+  +    private void RecuperarSenhaClicked(object sender, TappedEventArgs e)
+  +    {
+  +        Navigation.PushAsync(new RecoverPass());
+  +    }
+-- 
+--     private void BtnUserRegister_Clicked(object sender, EventArgs e)
+--     {
+--         // original ---> Navigation.PushAsync(new RegisterUserPage());
+--         // Após manter Navigation ORIGINAL, apagar a linha abaixo
+--         Navigation.PushAsync(new PanelUserPage());
+--     }
+  +}
+diff --cc PontoTech/PontoTech/Mvvm/View/PanelUserPage.xaml
+index 4fc698e,4fc698e,0000000..2645e77
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/PanelUserPage.xaml
++++ b/PontoTech/PontoTech/Mvvm/View/PanelUserPage.xaml
+@@@@ -1,130 -1,130 -1,0 +1,130 @@@@
+  +<?xml version="1.0" encoding="utf-8" ?>
+  +<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  +             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  +             BackgroundColor="#ffffff"
+--              x:Class="PontoTech.Pages.PanelUserPage"
++++             x:Class="PontoTech.Mvvm.View.PanelUserPage"
+  +             Shell.NavBarIsVisible="False"
+  +             NavigationPage.HasNavigationBar="False"
+  +             Title="PanelUserPage">
+  +
+  +    <StackLayout VerticalOptions="FillAndExpand">
+  +        <Label Text="Controle de ponto"
+  +               HorizontalOptions="Center"
+  +               FontSize="20"
+  +               FontAttributes="Bold"
+  +               TextColor="#028CD4"
+  +               Margin="16, 32, 16, 15"/>
+  +
+  +        <!-- Label para exibir a hora -->
+  +        <Label x:Name="lblHoraAtual"
+  +               HorizontalOptions="Center"
+  +               FontSize="24"
+  +               FontAttributes="Bold"
+  +               TextColor="Black"
+  +               Margin="0, 5, 0, 20" />
+  +
+  +        <!-- Grid horÃ¡rios -->
+  +        <StackLayout HorizontalOptions="CenterAndExpand" VerticalOptions="Center">
+  +            <Grid>
+  +                <Grid.RowDefinitions>
+  +                    <RowDefinition Height="Auto" />
+  +                </Grid.RowDefinitions>
+  +                <Grid.ColumnDefinitions>
+  +                    <ColumnDefinition Width="85" />
+  +                    <ColumnDefinition Width="85" />
+  +                    <ColumnDefinition Width="85" />
+  +                    <ColumnDefinition Width="85" />
+  +                </Grid.ColumnDefinitions>
+  +
+  +                <Frame Grid.Row="0" Grid.Column="0" WidthRequest="82" HeightRequest="90" BackgroundColor="#F1F4FF" CornerRadius="5" BorderColor="White"  Padding="2" Margin="5">
+  +                    <StackLayout VerticalOptions="Center">
+  +                        <Label Text="Entrada" FontSize="15" FontAttributes="Bold" TextColor="#5C5C5C" HorizontalOptions="Center" />
+  +                        <Label Text="08:00" FontSize="13" FontAttributes="None" TextColor="#5C5C5C" HorizontalOptions="Center" />
+  +                    </StackLayout>
+  +                </Frame>
+  +
+  +                <Frame Grid.Row="0" Grid.Column="1" WidthRequest="82" HeightRequest="90" BackgroundColor="#F1F4FF" CornerRadius="5" BorderColor="White" Padding="2" Margin="5">
+  +                    <StackLayout VerticalOptions="Center">
+  +                        <Label Text="Pausa" FontSize="15" FontAttributes="Bold" TextColor="#5C5C5C" HorizontalOptions="Center" />
+  +                        <Label Text="12:00" FontSize="13" FontAttributes="None" TextColor="#5C5C5C" HorizontalOptions="Center" />
+  +                    </StackLayout>
+  +                </Frame>
+  +
+  +                <Frame Grid.Row="0" Grid.Column="2" WidthRequest="82" HeightRequest="90" BackgroundColor="#F1F4FF" CornerRadius="5" BorderColor="White" Padding="2" Margin="5">
+  +                    <StackLayout VerticalOptions="Center">
+  +                        <Label Text="Retorno" FontSize="15" FontAttributes="Bold" TextColor="#5C5C5C" HorizontalOptions="Center" />
+  +                        <Label Text="12:30" FontSize="13" FontAttributes="None" TextColor="#5C5C5C" HorizontalOptions="Center" />
+  +                    </StackLayout>
+  +                </Frame>
+  +
+  +                <Frame Grid.Row="0" Grid.Column="3" WidthRequest="82" HeightRequest="90" BackgroundColor="#F1F4FF" CornerRadius="5" BorderColor="White" Padding="2" Margin="5">
+  +                    <StackLayout VerticalOptions="Center">
+  +                        <Label Text="SaÃ­da" FontSize="15" FontAttributes="Bold" TextColor="#5C5C5C" HorizontalOptions="Center" />
+  +                        <Label Text="16:00" FontSize="13" FontAttributes="None" TextColor="#5C5C5C" HorizontalOptions="Center" />
+  +                    </StackLayout>
+  +                </Frame>
+  +            </Grid>
+  +        </StackLayout>
+  +
+  +
+  +        <!-- Grid opÃ§Ãµes de pontos -->
+  +        <StackLayout VerticalOptions="CenterAndExpand" HorizontalOptions="Center">
+  +            <Grid>
+  +                <Grid.RowDefinitions>
+  +                    <RowDefinition Height="Auto" />
+  +                    <RowDefinition Height="Auto" />
+  +                </Grid.RowDefinitions>
+  +                <Grid.ColumnDefinitions>
+  +                    <ColumnDefinition Width="Auto" />
+  +                    <ColumnDefinition Width="Auto" />
+  +                </Grid.ColumnDefinitions>
+  +
+  +                <!-- BotÃµes superiores -->
+  +                <Frame Grid.Row="0" Grid.Column="0" WidthRequest="160" HeightRequest="175" BackgroundColor="#509953" BorderColor="White" CornerRadius="5" Margin="5">
+  +                    <Frame.GestureRecognizers>
+  +                        <TapGestureRecognizer Tapped="EntradaFrame_Tapped" />
+  +                    </Frame.GestureRecognizers>
+  +                    <StackLayout>
+  +                        <Label Text="Entrada" FontSize="16" FontAttributes="Bold" TextColor="White" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0" />
+  +                        <Image Source="ico_entrada.swg" HeightRequest="35" WidthRequest="35" VerticalOptions="End" HorizontalOptions="End" Margin="0,70,0,5" />
+  +                    </StackLayout>
+  +                </Frame>
+  +
+  +                <Frame Grid.Row="0" Grid.Column="1" WidthRequest="160" HeightRequest="175" BackgroundColor="#CCA030" BorderColor="White" CornerRadius="5" Margin="5">
+  +                    <Frame.GestureRecognizers>
+  +                        <TapGestureRecognizer Tapped="PausaFrame_Tapped" />
+  +                    </Frame.GestureRecognizers>
+  +                    <StackLayout>
+  +                        <Label Text="Pausa" FontSize="16" FontAttributes="Bold" TextColor="White" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0" />
+  +                        <Image Source="ico_pausa.swg" HeightRequest="35" WidthRequest="35" VerticalOptions="End" HorizontalOptions="End" Margin="0,70,0,5" />
+  +                    </StackLayout>
+  +                </Frame>
+  +
+  +                <!-- BotÃµes inferiores -->
+  +                <Frame Grid.Row="1" Grid.Column="0" WidthRequest="160" HeightRequest="175" BackgroundColor="#416999" BorderColor="White" CornerRadius="5" Margin="5">
+  +                    <Frame.GestureRecognizers>
+  +                        <TapGestureRecognizer Tapped="RetornoFrame_Tapped" />
+  +                    </Frame.GestureRecognizers>
+  +                    <StackLayout>
+  +                        <Label Text="Retorno" FontSize="16" FontAttributes="Bold" TextColor="White" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0" />
+  +                        <Image Source="ico_retorno.swg" HeightRequest="35" WidthRequest="35" VerticalOptions="End" HorizontalOptions="End" Margin="0,70,0,5" />
+  +                    </StackLayout>
+  +                </Frame>
+  +
+  +                <Frame Grid.Row="1" Grid.Column="1" WidthRequest="160" HeightRequest="175" BackgroundColor="#B45454" BorderColor="White" CornerRadius="5" Margin="5">
+  +                    <Frame.GestureRecognizers>
+  +                        <TapGestureRecognizer Tapped="SaidaFrame_Tapped" />
+  +                    </Frame.GestureRecognizers>
+  +                    <StackLayout>
+  +                        <Label Text="SaÃ­da" FontSize="16" FontAttributes="Bold" TextColor="White" VerticalOptions="Start" HorizontalOptions="Start" Margin="10,5,0,0" />
+  +                        <Image Source="ico_saida.swg" HeightRequest="35" WidthRequest="35" VerticalOptions="End" HorizontalOptions="End" Margin="0,70,0,5" />
+  +                    </StackLayout>
+  +                </Frame>
+  +            </Grid>
+  +        </StackLayout>
+  +  
+  +        <Label x:Name="NomeDoUser" Text="JosÃ© da Silva" FontSize="14" TextColor="Black" VerticalOptions="Center" HorizontalOptions="Center"/>
+--         <Button x:Name="BtnSair" Clicked="BtnSair_Clicked" Text="Sair da minha conta" FontSize="14" FontAttributes="Bold" TextColor="#B45454" BackgroundColor="White" BorderColor="#B45454" BorderWidth="1" WidthRequest="170" HeightRequest="35" Padding="5" Margin="0, 10, 0, 40"/>
++++        <Button x:Name="BtnSair" Command="{Binding BtnSair}" Text="Sair da minha conta" FontSize="14" FontAttributes="Bold" TextColor="#B45454" BackgroundColor="White" BorderColor="#B45454" BorderWidth="1" WidthRequest="170" HeightRequest="35" Padding="5" Margin="0, 10, 0, 40"/>
+  +
+  +    </StackLayout>
+  +</ContentPage>
+diff --cc PontoTech/PontoTech/Mvvm/View/PanelUserPage.xaml.cs
+index 3a5e1a3,3a5e1a3,0000000..dc25c40
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/PanelUserPage.xaml.cs
++++ b/PontoTech/PontoTech/Mvvm/View/PanelUserPage.xaml.cs
+@@@@ -1,56 -1,56 -1,0 +1,59 @@@@
+  +using System;
+  +using System.Threading.Tasks;
+  +using Microsoft.Maui.Controls;
++++using PontoTech.Mvvm.ViewModels;
+  +
+-- namespace PontoTech.Pages
++++namespace PontoTech.Mvvm.View
+  +{
+  +    public partial class PanelUserPage : ContentPage
+  +    {
+  +        public PanelUserPage()
+  +        {
+  +            InitializeComponent();
++++            BindingContext = new PanelUserPageViewModel();
+  +            AtualizarHora();
++++            
+  +        }
+  +
+  +        private async void AtualizarHora()
+  +        {
+  +            while (true)
+  +            {
+  +                lblHoraAtual.Text = DateTime.Now.ToString("HH:mm:ss");
+  +                await Task.Delay(1000); // Aguarda 1 segundo antes de atualizar novamente
+  +            }
+  +        }
+  +
+  +        private async void BtnSair_Clicked(object sender, EventArgs e)
+  +        {
+  +            try
+  +            {
+  +                await Shell.Current.GoToAsync("//LoginUserPage");
+  +            }
+  +            catch (Exception ex)
+  +            {
+  +                Console.WriteLine("Erro ao fazer logout: " + ex.Message);
+  +            }
+  +        }
+  +
+  +        private async void EntradaFrame_Tapped(object sender, TappedEventArgs e)
+  +        {
+  +            await Navigation.PushAsync(new CapturaPage());
+  +        }
+  +
+  +        private async void PausaFrame_Tapped(object sender, TappedEventArgs e)
+  +        {
+  +            await Navigation.PushAsync(new CapturaPage());
+  +        }
+  +
+  +        private async void RetornoFrame_Tapped(object sender, TappedEventArgs e)
+  +        {
+  +            await Navigation.PushAsync(new CapturaPage());
+  +        }
+  +
+  +        private async void SaidaFrame_Tapped(object sender, TappedEventArgs e)
+  +        {
+  +            await Navigation.PushAsync(new CapturaPage());
+  +        }
+  +    }
+  +}
+diff --cc PontoTech/PontoTech/Mvvm/View/RecoverPass.xaml
+index 5f3c6db,5f3c6db,0000000..eef49b8
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/RecoverPass.xaml
++++ b/PontoTech/PontoTech/Mvvm/View/RecoverPass.xaml
+@@@@ -1,92 -1,92 -1,0 +1,93 @@@@
+  +<?xml version="1.0" encoding="utf-8" ?>
+  +<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  +             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  +             BackgroundColor="#ffffff"
+  +             Shell.NavBarIsVisible="False"
+  +             NavigationPage.HasNavigationBar="False"
+--              x:Class="PontoTech.Pages.RecoverPass"
++++             x:Class="PontoTech.Mvvm.View.RecoverPass"
+  +             Title="RecoverPass">
+  +    <ScrollView>
+  +        <VerticalStackLayout
+  +            VerticalOptions="Center">
+  +
+  +            <VerticalStackLayout
+  +                VerticalOptions="Center"
+  +                
+  +                Spacing="15"
+  +                Padding="16">
+  +
+  +                <Label 
+  +                    Text="Recuperar senha"
+  +                    VerticalOptions="Center" 
+  +                    HorizontalOptions="Center"
+  +                    FontSize="24"
+  +                    FontAttributes="Bold"
+  +                    TextColor="#028CD4"/>
+  +                <Label 
+  +                    Text="Confirme seus dados para alterar a senha"
+  +    
+  +                    VerticalOptions="Center" 
+  +                    HorizontalOptions="Center"
+  +                    FontSize="18"
+  +                    FontAttributes="Bold"
+  +                    TextColor="#2C2C2C"/>
+  +            </VerticalStackLayout>
+  +
+  +
+  +            <StackLayout VerticalOptions="CenterAndExpand"
+  +            Margin="16"
+  +            Padding="16">
+  +
+  +                <Entry
+  +            Placeholder="CPF"
+  +            x:Name="txtCpf"
+  +            TextColor="#5C5C5C"/>
+  +                <Entry
+  +            Placeholder="Email"
+  +            x:Name="txtEmail"
+  +            TextColor="#5C5C5C"/>
+  +                <Entry
+  +            Placeholder="Nova senha"
+  +            x:Name="txtPassword"
+  +            FontSize="14"
+  +            TextColor="#5C5C5C"
+  +            IsPassword ="true"/>
+  +                <Entry
+  +            Placeholder="Confirme a nova senha"
+  +            x:Name="txtPasswordConf"
+  +            FontSize="14"
+  +            TextColor="#5C5C5C"
+  +            IsPassword ="true"/>
+  +
+  +                <Button
+  +            x:Name="BtnAlterarSenha"
+  +            Text="Alterar senha"
+  +            FontAttributes="Bold"
+  +            CornerRadius="7"
+  +            FontSize="14"
+  +            HeightRequest="45"
+  +            WidthRequest="320"
+  +            BackgroundColor="#028CD4"
+--             Clicked="BtnAlterarSenha_Clicked"
++++            Command="{Binding BtnAlterarSenha}"
++++            CommandParameter="{Binding Source={x:Reference txtCpf,txtEmail,txtPassword,txtPasswordConf},Path=Text}"
+  +            HorizontalOptions="Center"
+  +            Margin="10"/>
+  +
+  +                <Button
+  +            x:Name="BtnEntrar"
+  +            Text="Fazer login"
+  +            FontAttributes="Bold"
+  +            CornerRadius="7"
+  +            FontSize="14"
+  +            HeightRequest="45"
+  +            WidthRequest="320"
+  +            BackgroundColor="#ffffff"
+  +            TextColor="#2C2C2C"
+--             Clicked="BtnEntrar_Clicked"
++++            Command="{Binding BtnEntrar}"
+  +            HorizontalOptions="Center"
+  +            Margin="10"/>
+  +
+  +            </StackLayout>
+  +        </VerticalStackLayout>
+  +    </ScrollView>
+  +</ContentPage>
+diff --cc PontoTech/PontoTech/Mvvm/View/RecoverPass.xaml.cs
+index 017ef74,017ef74,0000000..1468ec6
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/RecoverPass.xaml.cs
++++ b/PontoTech/PontoTech/Mvvm/View/RecoverPass.xaml.cs
+@@@@ -1,61 -1,61 -1,0 +1,58 @@@@
+  +using Microsoft.Maui.Controls;
++++using PontoTech.Mvvm.ViewModels;
+  +
+-- namespace PontoTech.Pages
+-- {
++++namespace PontoTech.Mvvm.View;  
+  +    public partial class RecoverPass : ContentPage
+  +    {
+  +        public RecoverPass()
+  +        {
+  +            InitializeComponent();
++++        BindingContext = new RecoverPassViewModel();
+  +        }
+  +
+--         private async void BtnEntrar_Clicked(object sender, EventArgs e)
+--         {
+--             await Navigation.PushAsync(new LoginUserPage());
+--         }
++++        
+  +
+  +        private void BtnAlterarSenha_Clicked(object sender, EventArgs e)
+  +        {
+  +            string cpf = txtCpf.Text;
+  +            string email = txtEmail.Text;
+  +            string newPassword = txtPassword.Text;
+  +            string confirmPassword = txtPasswordConf.Text;
+  +
+  +            // Verificar se os campos estão vazios
+  +            if (string.IsNullOrWhiteSpace(cpf) || string.IsNullOrWhiteSpace(email) ||
+  +                string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(confirmPassword))
+  +            {
+  +                DisplayAlert("Erro", "Todos os campos são obrigatórios.", "OK");
+  +                return;
+  +            }
+  +
+  +            // Verificar se as senhas coincidem
+  +            if (newPassword != confirmPassword)
+  +            {
+  +                DisplayAlert("Erro", "As senhas não coincidem. Tente novamente.", "OK");
+  +                return;
+  +            }
+  +
+  +            // Verificar se o CPF e o e-mail correspondem a algum registro no banco de dados
+  +            if (IsValidCpfAndEmail(cpf, email))
+  +            {
+  +                // Se os dados coincidirem, você pode prosseguir com a alteração da senha
+  +                // Implemente a lógica para alterar a senha aqui
+  +
+  +                DisplayAlert("Sucesso", "Senha alterada com sucesso!", "OK");
+  +            }
+  +            else
+  +            {
+  +                DisplayAlert("Erro", "CPF ou e-mail incorretos. Verifique e tente novamente.", "OK");
+  +            }
+  +        }
+  +
+  +        // Método de exemplo para validar o CPF e o e-mail no banco de dados (substitua com sua lógica real)
+  +        private bool IsValidCpfAndEmail(string cpf, string email)
+  +        {
+  +            // Implemente sua lógica para verificar se o CPF e o e-mail correspondem a registros no banco de dados
+  +            // Esta é apenas uma simulação de exemplo
+  +            return (cpf == "12345678900" && email == "usuario@email.com");
+  +        }
+--     }
+-- }
++++    }
+diff --cc PontoTech/PontoTech/Mvvm/View/RegisterUserPage.xaml
+index a809f01,a809f01,0000000..7cd5e2e
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/RegisterUserPage.xaml
++++ b/PontoTech/PontoTech/Mvvm/View/RegisterUserPage.xaml
+@@@@ -1,95 -1,95 -1,0 +1,95 @@@@
+  +<?xml version="1.0" encoding="utf-8" ?>
+  +<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+  +             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+--              x:Class="PontoTech.Pages.RegisterUserPage"
++++             x:Class="PontoTech.Mvvm.View.RegisterUserPage"
+  +             Shell.NavBarIsVisible="False"
+  +             NavigationPage.HasNavigationBar="False"
+  +             Title="RegisterUserPage">
+  +    <ScrollView>
+  +        <VerticalStackLayout
+  +            VerticalOptions="Center">
+  +
+  +            <VerticalStackLayout
+  +                VerticalOptions="Center"
+  +                
+  +                Spacing="15"
+  +                Padding="16">
+  +
+  +                <Label 
+  +                    Text="Criar conta"
+  +                    VerticalOptions="Center" 
+  +                    HorizontalOptions="Center"
+  +                    FontSize="24"
+  +                    FontAttributes="Bold"
+  +                    TextColor="#028CD4"/>
+  +                <Label 
+  +                    Text="Simplifique a gestÃ£o do seu tempo"
+  +    
+  +                    VerticalOptions="Center" 
+  +                    HorizontalOptions="Center"
+  +                    FontSize="18"
+  +                    FontAttributes="Bold"
+  +                    TextColor="#2C2C2C"/>
+  +            </VerticalStackLayout>
+  +
+  +
+  +            <StackLayout VerticalOptions="CenterAndExpand"
+  +            Margin="16"
+  +            Padding="16">
+  +
+  +                <Entry
+  +            Placeholder="Nome completo"
+--             x:Name="txtName"
++++            Text="{Binding txtName}"
+  +            TextColor="#5C5C5C"/>
+  +                <Entry
+  +            Placeholder="CPF"
+--             x:Name="txtCpf"
++++            Text="{Binding txtCpf}"
+  +            TextColor="#5C5C5C"/>
+  +                <Entry
+  +            Placeholder="Email"
+--             x:Name="txtEmail"
++++            Text="{Binding txtEmail}"
+  +            TextColor="#5C5C5C"/>
+  +                <Entry
+  +            Placeholder="Senha"
+--             x:Name="txtPassword"
++++            Text="{Binding txtPassword}"
+  +            FontSize="14"
+  +            TextColor="#5C5C5C"
+  +            IsPassword ="true"/>
+  +                <Entry
+  +            Placeholder="Confirme a senha"
+--             x:Name="txtPasswordConf"
++++            Text="{Binding txtPasswordConf}"
+  +            FontSize="14"
+  +            TextColor="#5C5C5C"
+  +            IsPassword ="true"/>
+  +                
+  +                <Button
+  +            x:Name="BtnUserCreate"
+  +            Text="Criar conta"
+  +            FontAttributes="Bold"
+  +            CornerRadius="7"
+  +            FontSize="14"
+  +            HeightRequest="45"
+  +            WidthRequest="320"
+  +            BackgroundColor="#028CD4"
+--             Clicked="BtnRegister_Clicked"
++++            Command="{Binding BtnRegister}"
+  +            HorizontalOptions="Center"
+  +            Margin="10"/>
+  +
+  +                <Button
+  +            x:Name="BtnEntrar"
+  +            Text="Fazer login"
+  +            FontAttributes="Bold"
+  +            CornerRadius="7"
+  +            FontSize="14"
+  +            HeightRequest="45"
+  +            WidthRequest="320"
+  +            BackgroundColor="#ffffff"
+  +            TextColor="#2C2C2C"
+--             Clicked="BtnEntrar_Clicked"
++++            Command="{Binding BtnEntrar}"
+  +            HorizontalOptions="Center"
+  +            Margin="10"/>
+  +
+  +            </StackLayout>
+  +        </VerticalStackLayout>
+  +    </ScrollView>
+  +</ContentPage>
+diff --cc PontoTech/PontoTech/Mvvm/View/RegisterUserPage.xaml.cs
+index 2d0371e,2d0371e,0000000..d56465b
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/Mvvm/View/RegisterUserPage.xaml.cs
++++ b/PontoTech/PontoTech/Mvvm/View/RegisterUserPage.xaml.cs
+@@@@ -1,97 -1,97 -1,0 +1,35 @@@@
++++using PontoTech.Mvvm.ViewModels;
+  +using System;
+  +using System.Text.RegularExpressions;
+  +
+-- namespace PontoTech.Pages
++++namespace PontoTech.Mvvm.View
+  +{
+  +    public partial class RegisterUserPage : ContentPage
+  +    {
+  +        public RegisterUserPage()
+  +        {
+  +            InitializeComponent();
++++            BindingContext = new RegisterUserPageViewModel();
+  +        }
+  +
+  +        private void BtnUserLogin_Clicked(object sender, EventArgs e)
+  +        {
+  +            Navigation.PushAsync(new LoginUserPage());
+  +        }
+  +
+--         private void BtnRegister_Clicked(object sender, EventArgs e)
+--         {
+--             ValidateRegister();
+--         }
+-- 
+--         private async void ValidateRegister()
+--         {
+--             string name = txtName.Text;
+--             string cpf = txtCpf.Text;
+--             string email = txtEmail.Text;
+--             string password = txtPassword.Text;
+--             string passwordconf = txtPasswordConf.Text;
+-- 
+--             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) ||
+--                 string.IsNullOrWhiteSpace(passwordconf) || string.IsNullOrWhiteSpace(name) ||
+--                 string.IsNullOrWhiteSpace(cpf))
+--             {
+--                 await DisplayAlert("Erro", "Todos os campos são obrigatórios.", "OK");
+--                 return;
+--             }
+-- 
+--             // Validar se as senhas coincidem
+--             if (password != passwordconf)
+--             {
+--                 await DisplayAlert("Erro", "As senhas não coincidem. Tente novamente.", "OK");
+--                 return;
+--             }
+-- 
+--             // Validar o formato do e-mail
+--             if (!IsValidEmail(email))
+--             {
+--                 await DisplayAlert("Erro", "Digite um endereço de e-mail válido.", "OK");
+--                 return;
+--             }
+-- 
+--             // Validar a complexidade da senha
+--             if (!IsStrongPassword(password))
+--             {
+--                 await DisplayAlert("Erro", "A senha deve conter de 8 a 12 caracteres e pelo menos um caractere especial.", "OK");
+--                 return;
+--             }
+-- 
+--             // Implementar a lógica de conexão com o banco de dados aqui
+--             if (email == "email" && password == "password" && name == "name" && cpf == "cpf")
+--             {
+--                 // Credenciais corretas, redirecione para o painel do usuário
+--                 await Navigation.PushAsync(new PanelUserPage());
+--             }
+--             else
+--             {
+--                 // Credenciais inválidas, exiba uma mensagem de erro
+--                 await DisplayAlert("Erro", "Credenciais inválidas. Tente novamente.", "OK");
+--             }
+--         }
+-- 
+--         private bool IsValidEmail(string email)
+--         {
+--             // Expressão regular para validar o formato de e-mail
+--             string pattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
+-- 
+--             // Verifica se o e-mail corresponde ao padrão
+--             return Regex.IsMatch(email, pattern);
+--         }
+-- 
+  +        private bool IsStrongPassword(string password)
+  +        {
+  +            // Expressão regular para validar a complexidade da senha
+  +            string pattern = @"^(?=.*[!@#$%^&*()_+\\-=\\[\]{};':\""\|,.<>\/?])(?=.*[a-zA-Z0-9]).{8,12}$";
+  +
+  +            // Verifica se a senha corresponde ao padrão
+  +            return Regex.IsMatch(password, pattern);
+  +        }
+  +
+  +        private void BtnEntrar_Clicked(object sender, EventArgs e)
+  +        {
+  +            Navigation.PushAsync(new LoginUserPage());
+  +            
+  +        }
+  +    }
+  +}
+diff --cc PontoTech/PontoTech/PontoTech.csproj
+index 8380453,8380453,0000000..ce30bd2
+mode 100644,100644,000000..100644
+--- a/PontoTech/PontoTech/PontoTech.csproj
++++ b/PontoTech/PontoTech/PontoTech.csproj
+@@@@ -1,83 -1,83 -1,0 +1,89 @@@@
+  +ï»¿<Project Sdk="Microsoft.NET.Sdk">
+  +
+  +	<PropertyGroup>
+  +		<TargetFrameworks>net7.0-android;net7.0-ios;net7.0-maccatalyst</TargetFrameworks>
+  +		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net7.0-windows10.0.19041.0</TargetFrameworks>
+  +		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
+  +		<!-- <TargetFrameworks>$(TargetFrameworks);net7.0-tizen</TargetFrameworks> -->
+  +		<OutputType>Exe</OutputType>
+  +		<RootNamespace>PontoTech</RootNamespace>
+  +		<UseMaui>true</UseMaui>
+  +		<SingleProject>true</SingleProject>
+  +		<ImplicitUsings>enable</ImplicitUsings>
+  +
+  +		<!-- Display name -->
+  +		<ApplicationTitle>PontoTech</ApplicationTitle>
+  +
+  +		<!-- App Identifier -->
+  +		<ApplicationId>com.companyname.pontotech</ApplicationId>
+  +		<ApplicationIdGuid>5d6f1b41-3812-4b6a-8bf4-a5158b1bb549</ApplicationIdGuid>
+  +
+  +		<!-- Versions -->
+  +		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+  +		<ApplicationVersion>1</ApplicationVersion>
+  +
+  +		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">11.0</SupportedOSPlatformVersion>
+  +		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">13.1</SupportedOSPlatformVersion>
+  +		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+  +		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+  +		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+  +		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
+  +	</PropertyGroup>
+  +
+  +	<ItemGroup>
+  +		<!-- App Icon -->
+  +		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+  +
+  +		<!-- Splash Screen -->
+  +		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+  +
+  +		<!-- Images -->
+  +		<MauiImage Include="Resources\Images\*" />
+  +		<MauiImage Update="Resources\Images\dotnet_bot.svg" BaseSize="168,208" />
+  +
+  +		<!-- Custom Fonts -->
+  +		<MauiFont Include="Resources\Fonts\*" />
+  +
+  +		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+  +		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+  +	</ItemGroup>
+  +
+  +	<ItemGroup>
+  +		<PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face" Version="2.8.0-preview.3" />
++++		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
++++		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.14">
++++		  <PrivateAssets>all</PrivateAssets>
++++		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
++++		</PackageReference>
+  +		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
++++		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+  +	</ItemGroup>
+  +
+  +	<ItemGroup>
+  +	  <Compile Update="Mvvm\View\HomePageView.xaml.cs">
+  +	    <DependentUpon>HomePageView.xaml</DependentUpon>
+  +	  </Compile>
+  +	</ItemGroup>
+  +
+  +	<ItemGroup>
+  +	  <MauiXaml Update="Mvvm\View\CapturaPage.xaml">
+  +	    <Generator>MSBuild:Compile</Generator>
+  +	  </MauiXaml>
+  +	  <MauiXaml Update="Mvvm\View\HomePageView.xaml">
+  +	    <Generator>MSBuild:Compile</Generator>
+  +	  </MauiXaml>
+  +	  <MauiXaml Update="Mvvm\View\LoginUserPage.xaml">
+  +	    <Generator>MSBuild:Compile</Generator>
+  +	  </MauiXaml>
+  +	  <MauiXaml Update="Mvvm\View\PanelUserPage.xaml">
+  +	    <Generator>MSBuild:Compile</Generator>
+  +	  </MauiXaml>
+  +	  <MauiXaml Update="Mvvm\View\RecoverPass.xaml">
+  +	    <Generator>MSBuild:Compile</Generator>
+  +	  </MauiXaml>
+  +	  <MauiXaml Update="Mvvm\View\RegisterUserPage.xaml">
+  +	    <Generator>MSBuild:Compile</Generator>
+  +	  </MauiXaml>
+  +	</ItemGroup>
+  +
+  +</Project>

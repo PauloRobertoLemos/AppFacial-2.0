@@ -1,18 +1,16 @@
 using Microsoft.Maui.Controls;
+using PontoTech.Mvvm.ViewModels;
 
-namespace PontoTech.Pages
-{
+namespace PontoTech.Mvvm.View;  
     public partial class RecoverPass : ContentPage
     {
         public RecoverPass()
         {
             InitializeComponent();
+        BindingContext = new RecoverPassViewModel();
         }
 
-        private async void BtnEntrar_Clicked(object sender, EventArgs e)
-        {
-            await Navigation.PushAsync(new LoginUserPage());
-        }
+        
 
         private void BtnAlterarSenha_Clicked(object sender, EventArgs e)
         {
@@ -58,4 +56,3 @@ namespace PontoTech.Pages
             return (cpf == "12345678900" && email == "usuario@email.com");
         }
     }
-}

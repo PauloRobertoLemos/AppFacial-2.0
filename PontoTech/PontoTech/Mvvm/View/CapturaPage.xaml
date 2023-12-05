@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="PontoTech.Pages.CapturaPage"
+             x:Class="PontoTech.Mvvm.View.CapturaPage"
              Shell.NavBarIsVisible="False"
              NavigationPage.HasNavigationBar="False"
              BackgroundColor="#EFEFEF"
@@ -41,7 +41,7 @@
             HeightRequest="45"
             WidthRequest="320"
             BackgroundColor="#028CD4"
-            Clicked="BtnCapturar_Clicked"
+            Command="{Binding BtnCapturarCommand}"
             HorizontalOptions="Center"
             Margin="10, 0, 10, 50"/>
 
