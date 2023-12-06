@@ -10,7 +10,7 @@ namespace PontoTech.Mvvm.Models
 {
     public class Funcionario
     {  public String nome { get { return nome;}set { } }
-       public String Cpf { get { return Cpf;}set { } }
+       public String Cpf { get { try { return Cpf; } catch (StackOverflowException ex) { App.Current.MainPage.DisplayAlert("erro", ex.Message, "fechar"); return null; } } set { } }
        public String Email { get { return Email;}set { } }
        public String Senha { get { return Senha;} set { } }
        public List<Entradas> entradas { get; set; }

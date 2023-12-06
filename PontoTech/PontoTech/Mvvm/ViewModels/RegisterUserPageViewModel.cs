@@ -22,20 +22,27 @@ namespace PontoTech.Mvvm.ViewModels
         
 
         public ICommand BtnRegister => new Command(() => 
-        { Funcionario f = Cadastrar(txtName, txtCpf, txtEmail, txtPassword, txtPasswordConf);
+        { Funcionario f = Cadastrar(txtName, txtCpf, txtEmail, txtPassword);
+            f.AdicionarEntrada("PrimeiroAcesso");
             var db = new BancoDadosContext();
-            var n = f.nome;
             if(f != null) {
-                var Funcionarios = db.Funcionarios.Add(f);
+                try {
+                    db.Funcionarios.Add(f);
+                    db.Entradas.Add(new Entradas("PrimeiroAcesso"));
+                    db.SaveChanges();
+                }catch(Exception ex) {
+                    App.Current.MainPage.DisplayAlert("Erro", ex.Message, "fechar");
+                }
+                App.Current.MainPage.Navigation.PushAsync(new LoginUserPage());
             }
         });
 
         public ICommand BtnEntrar => new Command(() => App.Current.MainPage.Navigation.PushAsync(new LoginUserPage()));
 
 
-        private Funcionario Cadastrar(String nome, String cpf, String email, String senha,String senhaConf)
+        private Funcionario Cadastrar(String nome, String cpf, String email, String senha)
         {
-            if (ValidarTodasPropriedades(nome,cpf,email,senha,senhaConf))
+            if (ValidarTodasPropriedades(nome,cpf,email,senha,txtPasswordConf))
             {
 
                 return new Funcionario(nome, cpf, email, senha);

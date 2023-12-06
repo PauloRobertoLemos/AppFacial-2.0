@@ -8,8 +8,8 @@ namespace PontoTech.Mvvm.Models
 {
     public class Entradas
     {
-        private DateTime HoraDia;
-        private String Marcador;
+        public DateTime HoraDia { get; set; }
+        public String Marcador { get; set; }
 
         public Entradas(String marcador) {
             this.HoraDia = DateTime.Now;
