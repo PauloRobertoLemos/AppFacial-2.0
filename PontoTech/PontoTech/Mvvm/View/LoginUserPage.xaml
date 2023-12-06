@@ -87,6 +87,8 @@
             Command="{Binding BtnUserRegister}"
             HorizontalOptions="Center"
             Margin="10"/>
+            
+            <Button x:Name="PainelTest" Text="Painel test" Clicked="PainelTest_Clicked"/>
 
         </StackLayout>
         </VerticalStackLayout>
