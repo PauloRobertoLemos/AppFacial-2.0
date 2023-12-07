@@ -1,7 +1,6 @@
 using Microsoft.Maui.Controls;
 using PontoTech.Mvvm.ViewModels;
 using System;
-using System.Threading.Tasks;
 
 namespace PontoTech.Mvvm.View
 {
@@ -11,6 +10,13 @@ namespace PontoTech.Mvvm.View
         {
             InitializeComponent();
             BindingContext = new CapturaPageViewModel();
+
+            // Evento de clique do botão BtnCapturar para chamar a captura de foto
+            BtnCapturar.Clicked += async (sender, e) =>
+            {
+                var viewModel = (CapturaPageViewModel)BindingContext;
+                await viewModel.CapturarFoto(); // Chama o método para capturar a foto
+            };
         }
     }
 }

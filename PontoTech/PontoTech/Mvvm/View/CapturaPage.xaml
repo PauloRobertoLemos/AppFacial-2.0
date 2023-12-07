@@ -33,17 +33,17 @@
                BackgroundColor="LightGray"/>
 
         <Button
-            x:Name="BtnCapturar"
-            Text="Capturar"
-            FontAttributes="Bold"
-            CornerRadius="7"
-            FontSize="14"
-            HeightRequest="45"
-            WidthRequest="320"
-            BackgroundColor="#028CD4"
-            Command="{Binding BtnCapturarCommand}"
-            HorizontalOptions="Center"
-            Margin="10, 0, 10, 50"/>
+    x:Name="BtnCapturar"
+    Text="Capturar"
+    FontAttributes="Bold"
+    CornerRadius="7"
+    FontSize="14"
+    HeightRequest="45"
+    WidthRequest="320"
+    BackgroundColor="#028CD4"
+    Command="{Binding BtnCapturarCommand}"
+    HorizontalOptions="Center"
+    Margin="10, 0, 10, 50"/>
 
     </StackLayout>
 </ContentPage>
