@@ -1,4 +1,6 @@
-﻿using PontoTech.Mvvm.View;
+﻿using MySqlConnector;
+using PontoTech.Mvvm.Models;
+using PontoTech.Mvvm.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,16 +29,19 @@ namespace PontoTech.Mvvm.ViewModels
 
         private async Task ValidateLogin()
         {
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(senha))
+            var db = new BancoDadosContext();
+            try
             {
-                await App.Current.MainPage.DisplayAlert("Erro", "O endereço de email e senha são obrigatórios.", "OK");
-                return;
-                
+                int i = db.ValidarLogin(email, senha);
+                string s = i.ToString();
+                App.Current.MainPage.DisplayAlert("login", s, "fechar");
             }
-            else
+            catch (MySqlException ex)
             {
-                App.Current.MainPage.Navigation.PushAsync(new PanelUserPage());
+                App.Current.MainPage.DisplayAlert("login", ex.Message, "fechar");
+
             }
+
         }
 
         public ICommand BtnUserRegister => new Command(() => App.Current.MainPage.Navigation.PushAsync(new RegisterUserPage()));

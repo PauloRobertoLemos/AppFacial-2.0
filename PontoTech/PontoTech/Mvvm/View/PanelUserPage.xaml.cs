@@ -38,22 +38,22 @@ namespace PontoTech.Mvvm.View
 
         private async void EntradaFrame_Tapped(object sender, TappedEventArgs e)
         {
-            await Navigation.PushAsync(new CapturaPage());
+            
         }
 
         private async void PausaFrame_Tapped(object sender, TappedEventArgs e)
         {
-            await Navigation.PushAsync(new CapturaPage());
+            
         }
 
         private async void RetornoFrame_Tapped(object sender, TappedEventArgs e)
         {
-            await Navigation.PushAsync(new CapturaPage());
+           
         }
 
         private async void SaidaFrame_Tapped(object sender, TappedEventArgs e)
         {
-            await Navigation.PushAsync(new CapturaPage());
+           
         }
     }
 }
