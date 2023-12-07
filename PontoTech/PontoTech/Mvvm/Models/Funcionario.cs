@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 namespace PontoTech.Mvvm.Models
 {
     public class Funcionario
-    {  public String nome { get { return nome;}set { } }
-       public String Cpf { get { try { return Cpf; } catch (StackOverflowException ex) { App.Current.MainPage.DisplayAlert("erro", ex.Message, "fechar"); return null; } } set { } }
-       public String Email { get { return Email;}set { } }
-       public String Senha { get { return Senha;} set { } }
+    {  public String nome { get; set; }
+       public String Cpf { get; set; }
+       public String Email { get; set; }
+       public String Senha { get; set; }
        public List<Entradas> entradas { get; set; }
 
        public Funcionario(String nome, String Cpf, String email, String senha)

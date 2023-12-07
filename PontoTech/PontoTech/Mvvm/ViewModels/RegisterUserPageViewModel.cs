@@ -26,13 +26,7 @@ namespace PontoTech.Mvvm.ViewModels
             f.AdicionarEntrada("PrimeiroAcesso");
             var db = new BancoDadosContext();
             if(f != null) {
-                try {
-                    db.Funcionarios.Add(f);
-                    db.Entradas.Add(new Entradas("PrimeiroAcesso"));
-                    db.SaveChanges();
-                }catch(Exception ex) {
-                    App.Current.MainPage.DisplayAlert("Erro", ex.Message, "fechar");
-                }
+                db.InserirFuncionario(f.nome, f.Cpf, f.Email, f.Senha);
                 App.Current.MainPage.Navigation.PushAsync(new LoginUserPage());
             }
         });

@@ -50,13 +50,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Azure.CognitiveServices.Vision.Face" Version="2.8.0-preview.3" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.14">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
-		<PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="7.0.0" />
+		<PackageReference Include="MySqlConnector" Version="2.3.1" />
 	</ItemGroup>
 
 	<ItemGroup>
