@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,37 +7,49 @@ using System.Threading.Tasks;
 
 namespace PontoTech.Mvvm.Models
 {
-    public class BancoDadosContext :DbContext
-    {
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
+    public class BancoDadosContext 
+    {   private MySqlConnectionStringBuilder strconexao = new MySqlConnectionStringBuilder 
         {
-            if(options != null)
-            {
-                string conecaostr = "server=a3.cy9jxemryba8.us-east-2.rds.amazonaws.com;port=3306;database=PontoTech;uid=admin;password=DhomynyFarias1512";
-                options.UseMySql(conecaostr,ServerVersion.AutoDetect(conecaostr));
-            }
-        }
+            Server = "a3.cy9jxemryba8.us-east-2.rds.amazonaws.com",
+            UserID = "admin",
+            Password = "DhomynyFarias1512",
+            Database = "PontoTech",
+            Port = 3306,
+        };
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        
+
+        public void InserirFuncionario(String nome,String cpf,string email, string senha)
         {
-            base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Entradas>(entity => 
-            {
-                entity.HasKey(e => e.Marcador);
-                entity.Property(e => e.HoraDia);
+            var cmd = new MySqlCommand();
+            MySqlConnection conexao = new MySqlConnection(strconexao.ConnectionString);
             
-            });
+            
 
-            modelBuilder.Entity<Funcionario>(entity =>
+            try
             {
-                entity.HasKey(e => e.Cpf);
-                entity.Property(e => e.nome).IsRequired();
-                entity.Property(e => e.Email).IsRequired();
-                entity.Property(e => e.Senha).IsRequired();
-            });
+                conexao.Open();
+                cmd.Connection = conexao;
+
+                cmd.CommandText= "INSERT INTO `PontoTech`.`Funcionario`(`FuncionarioNome`,`FuncionarioCpf`,`FuncionarioEmail`,`FuncionarioSenha`) VALUES(@nome,@cpf,@email,@senha);";
+                cmd.Prepare();
+
+                cmd.Parameters.AddWithValue("@nome",nome);
+                cmd.Parameters.AddWithValue("@cpf", cpf);
+                cmd.Parameters.AddWithValue("@email", email);
+                cmd.Parameters.AddWithValue("@senha", senha);
+                cmd.ExecuteNonQuery();
+            }
+            catch (MySqlException ex)
+            {
+                App.Current.MainPage.DisplayAlert("SQL ERROR", ex.Message, "Fechar");
+            } 
+            finally { conexao.Close(); }
+            
         }
-        public DbSet<Funcionario> Funcionarios { get; set; }
-        public DbSet<Entradas> Entradas { get; set;}
+
+
+       
     }
 }
