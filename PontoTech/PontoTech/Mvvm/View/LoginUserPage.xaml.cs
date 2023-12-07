@@ -17,4 +17,9 @@ public partial class LoginUserPage : ContentPage
     {
         Navigation.PushAsync(new RecoverPass());
     }
+
+    private void PainelTest_Clicked(object sender, EventArgs e)
+    {
+        Navigation.PushAsync(new PanelUserPage());
+    }
 }
