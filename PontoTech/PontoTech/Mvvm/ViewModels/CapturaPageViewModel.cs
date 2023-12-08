@@ -17,38 +17,27 @@ namespace PontoTech.Mvvm.ViewModels
             BtnCapturarCommand = new Command(async () => await CapturarFotoAsync());
         }
 
-        private async Task CapturarFotoAsync()
+        public async Task CapturarFotoAsync()
         {
             try
             {
-                await CrossMedia.Current.Initialize();
-
-                if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
+                if (MediaPicker.Default.IsCaptureSupported)
                 {
-                    // Lidar com a situação em que a câmera não está disponível
-                    return;
-                }
+                    FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
 
-                var file = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions
-                {
-                    Directory = "Sample",
-                    Name = "sample.jpg"
-                });
-
-                if (file != null)
-                {
-                    // Salvar o arquivo no armazenamento local
-                    string localFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), file.Path);
-
-                    using (var sourceStream = file.GetStream())
+                    if (photo != null)
                     {
-                        using (var destinationStream = File.OpenWrite(localFilePath))
+                        // Salvar o arquivo no armazenamento local
+                        string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
+
+                        using (Stream sourceStream = await photo.OpenReadAsync())
                         {
-                            await sourceStream.CopyToAsync(destinationStream);
+                            using (FileStream localFileStream = File.OpenWrite(localFilePath))
+                            {
+                                await sourceStream.CopyToAsync(localFileStream);
+                            }
                         }
                     }
-
-                    // Aqui você pode realizar outras operações com a foto capturada, se necessário
                 }
             }
             catch (Exception ex)
@@ -59,5 +48,6 @@ namespace PontoTech.Mvvm.ViewModels
                 // Por exemplo, exibir uma mensagem de erro para o usuário
             }
         }
+
     }
 }
