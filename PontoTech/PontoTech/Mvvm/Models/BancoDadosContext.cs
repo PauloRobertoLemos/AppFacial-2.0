@@ -12,13 +12,13 @@ namespace PontoTech.Mvvm.Models
     {
         private MySqlConnectionStringBuilder strconexao = new MySqlConnectionStringBuilder
         {
-            Server = "mysql-157000-0.cloudclusters.net",
-            UserID = "admin",
-            Password = "kjOAt4X2",
+            Server = "18.226.185.16",
+            UserID = "aplicacao",
+            Password = "1234",
             Database = "PontoTech",
-            Port = 18608,
-            SslMode = MySqlSslMode.VerifyCA,
-            SslCa = ,
+            Port = 3306,
+            SslMode = MySqlSslMode.None
+            
 
         };
 
@@ -53,7 +53,7 @@ namespace PontoTech.Mvvm.Models
             }
             finally { conexao.Close(); }
         }
-        public int ValidarLogin(string nomeUsuario, string senha)
+        public int ValidarLogin(string email, string senha)
         {
             
             
@@ -64,8 +64,8 @@ namespace PontoTech.Mvvm.Models
                 using (MySqlCommand command = new MySqlCommand(query, conn))
                 {
                     conn.Open();
-                    command.Parameters.AddWithValue("@email", "d@gmail.com");
-                    command.Parameters.AddWithValue("@Senha", "dho");
+                    command.Parameters.AddWithValue("@email", email);
+                    command.Parameters.AddWithValue("@Senha", senha);
 
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {
@@ -76,12 +76,12 @@ namespace PontoTech.Mvvm.Models
                         // Adicione uma linha de log
                         if (loginValido)
                         {
-                            Console.WriteLine("Login bem-sucedido para o usuário: " + nomeUsuario);
+                            Console.WriteLine("Login bem-sucedido para o usuário: " + email);
                             return 1;
                         }
                         else
                         {
-                            Console.WriteLine("Login falhou para o usuário: " + nomeUsuario);
+                            Console.WriteLine("Login falhou para o usuário: " + email);
                             return -1;
                         }
 

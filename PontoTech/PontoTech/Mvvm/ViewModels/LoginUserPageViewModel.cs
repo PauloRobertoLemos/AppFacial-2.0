@@ -17,28 +17,27 @@ namespace PontoTech.Mvvm.ViewModels
 
 
         public ICommand BtnUserLogin => new Command(async () => { 
-            App.Current.MainPage.DisplayAlert("login", mensagem(), "fechar");
-            await ValidateLogin();
-            
+            await ValidateLogin(email,senha);
         });
 
-        private string mensagem()
-        {
-            return "email:" + email + " senha:" + senha;
-        }
-
-        private async Task ValidateLogin()
+        private async Task ValidateLogin(string email, string senha)
         {
             var db = new BancoDadosContext();
             try
             {
-                int i = db.ValidarLogin(email, senha);
-                string s = i.ToString();
-                App.Current.MainPage.DisplayAlert("login", s, "fechar");
+               if (db.ValidarLogin(email,senha) == 1)
+                {
+                    int i = db.ValidarLogin(email, senha);
+                     await App.Current.MainPage.Navigation.PushAsync(new PanelUserPage());
+                }
+                else
+                {
+                     await App.Current.MainPage.DisplayAlert("login invalido","senha ou email invalido", "fechar");
+                }
             }
             catch (MySqlException ex)
             {
-                App.Current.MainPage.DisplayAlert("login", ex.Message, "fechar");
+                await App.Current.MainPage.DisplayAlert("login", ex.Message, "fechar");
 
             }
 
