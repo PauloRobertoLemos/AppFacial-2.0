@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Xamarin.Forms;
+
 using Plugin.Media;
 using Plugin.Media.Abstractions;
 

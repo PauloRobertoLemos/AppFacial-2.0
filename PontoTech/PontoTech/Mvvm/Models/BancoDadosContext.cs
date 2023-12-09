@@ -84,8 +84,6 @@ namespace PontoTech.Mvvm.Models
                             Console.WriteLine("Login falhou para o usuário: " + email);
                             return -1;
                         }
-
-                        return 0;
                     }
                 }
           

@@ -38,7 +38,7 @@ namespace PontoTech.Mvvm.View
 
         private async void EntradaFrame_Tapped(object sender, TappedEventArgs e)
         {
-            
+            App.Current.MainPage.Navigation.PushAsync(new CapturaPage());
         }
 
         private async void PausaFrame_Tapped(object sender, TappedEventArgs e)
