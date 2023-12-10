@@ -25,15 +25,15 @@
 
         <!-- Aqui uma previa da camera do celular para fazer a captura -->
         <Image x:Name="CapturedImage"
-           Aspect="AspectFill"
-           VerticalOptions="CenterAndExpand"
-           HorizontalOptions="Center"
-           HeightRequest="350"
-           WidthRequest="320"
-           BackgroundColor="LightGray"
-           Source="{Binding FotoSelecionada}" />
+               Aspect="AspectFill"
+               VerticalOptions="CenterAndExpand"
+               HorizontalOptions="Center"
+               HeightRequest="350"
+               WidthRequest="320"
+               BackgroundColor="LightGray"/>
 
-        <Button x:Name="BtnCapturar"
+            <Button
+            x:Name="BtnCapturar"
             Text="Capturar"
             FontAttributes="Bold"
             CornerRadius="7"
@@ -41,7 +41,7 @@
             HeightRequest="45"
             WidthRequest="320"
             BackgroundColor="#028CD4"
-            Command="{Binding CapturarFotoCommand}"
+            Command="{Binding BtnCapturarCommand}"
             HorizontalOptions="Center"
             Margin="10, 0, 10, 50"/>
 

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
+using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Plugin.Media;
@@ -7,39 +7,27 @@ using Plugin.Media.Abstractions;
 
 namespace PontoTech.Mvvm.ViewModels
 {
-    public class CapturaPageViewModel : INotifyPropertyChanged
+    public class CapturaPageViewModel
     {
         public ICommand BtnCapturarCommand { get; private set; }
-        
-
 
         public CapturaPageViewModel()
         {
-            CapturarFotoCommand = new Command(async () => await CapturarFotoAsync());
-            SelecionarFotoCommand = new Command(async () => await SelecionarFotoAsync());
+            BtnCapturarCommand = new Command(async () => await CapturarFotoAsync());
         }
 
-        private async Task CapturarFotoAsync()
+        public async Task CapturarFotoAsync()
         {
             try
             {
-                if (!CrossMedia.Current.IsCameraAvailable || !CrossMedia.Current.IsTakePhotoSupported)
+                if (MediaPicker.Default.IsCaptureSupported)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Sem Câmera", "Não há câmera disponível.", "OK");
-                    return;
-                }
+                    FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
 
-                var nameFile = "AAf" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".jpg";
-
-                var file = await CrossMedia.Current.TakePhotoAsync(new StoreCameraMediaOptions
-                {
-                    SaveToAlbum = true,
-                    Name = nameFile,
-                    Directory = "Pictures",
-                    CompressionQuality = 75,
-                    PhotoSize = PhotoSize.Small,
-                    DefaultCamera = CameraDevice.Front
-                });
+                    if (photo != null)
+                    {
+                        // Salvar o arquivo no armazenamento local
+                        string localFilePath = Path.Combine(FileSystem.CacheDirectory, photo.FileName);
 
                         using (Stream sourceStream = await photo.OpenReadAsync())
                         {
@@ -48,36 +36,17 @@ namespace PontoTech.Mvvm.ViewModels
                                 await sourceStream.CopyToAsync(localFileStream);
                             }
                         }
-
                     }
                 }
-
-                var file = await CrossMedia.Current.PickPhotoAsync(new PickMediaOptions
-                {
-                    PhotoSize = PhotoSize.Small,
-                });
-
-                if (file == null)
-                    return;
-
-                FotoSelecionada = ImageSource.FromStream(() =>
-                {
-                    var stream = file.GetStream();
-                    file.Dispose();
-                    return stream;
-                });
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao selecionar foto: {ex.Message}");
+                // Lidar com a exceção
+                Console.WriteLine($"Erro ao capturar foto: {ex.Message}");
+                // Aqui você pode tratar a exceção de acordo com o fluxo da sua aplicação
+                // Por exemplo, exibir uma mensagem de erro para o usuário
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnPropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }
