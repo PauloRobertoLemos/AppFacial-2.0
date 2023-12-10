@@ -11,15 +11,15 @@ namespace PontoTech.Mvvm.ViewModels
     internal class PanelUserPageViewModel
     {
         
-        ICommand BtnSair => new Command( ()=>
+        ICommand BtnSair => new Command(async ()=>
         {
             try
             {
-                 App.Current.MainPage.Navigation.PopAsync();
+                await App.Current.MainPage.Navigation.PushAsync(new LoginUserPage());
             }
             catch (Exception ex)
             { 
-                App.Current.MainPage.DisplayAlert("erro",ex.Message, "fechar");
+                await App.Current.MainPage.DisplayAlert("erro",ex.Message, "fechar");
             }
         });
 

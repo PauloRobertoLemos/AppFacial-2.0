@@ -40,21 +40,21 @@
 
                 <Entry
             Placeholder="CPF"
-            x:Name="txtCpf"
+            Text="{Binding txtCpf}"
             TextColor="#5C5C5C"/>
                 <Entry
             Placeholder="Email"
-            x:Name="txtEmail"
+            Text="{Binding txtEmail}"
             TextColor="#5C5C5C"/>
                 <Entry
             Placeholder="Nova senha"
-            x:Name="txtPassword"
+            Text="{Binding txtPassword}"
             FontSize="14"
             TextColor="#5C5C5C"
             IsPassword ="true"/>
                 <Entry
             Placeholder="Confirme a nova senha"
-            x:Name="txtPasswordConf"
+            Text="{Binding txtPasswordConf}"
             FontSize="14"
             TextColor="#5C5C5C"
             IsPassword ="true"/>
@@ -69,7 +69,6 @@
             WidthRequest="320"
             BackgroundColor="#028CD4"
             Command="{Binding BtnAlterarSenha}"
-            CommandParameter="{Binding Source={x:Reference txtCpf,txtEmail,txtPassword,txtPasswordConf},Path=Text}"
             HorizontalOptions="Center"
             Margin="10"/>
 

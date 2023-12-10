@@ -2,7 +2,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
 using Plugin.Media;
 using Plugin.Media.Abstractions;
 
@@ -11,6 +10,8 @@ namespace PontoTech.Mvvm.ViewModels
     public class CapturaPageViewModel
     {
         public ICommand BtnCapturarCommand { get; private set; }
+        
+
 
         public CapturaPageViewModel()
         {
@@ -37,6 +38,7 @@ namespace PontoTech.Mvvm.ViewModels
                                 await sourceStream.CopyToAsync(localFileStream);
                             }
                         }
+
                     }
                 }
             }

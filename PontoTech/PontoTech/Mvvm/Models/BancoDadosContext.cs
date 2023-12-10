@@ -18,23 +18,15 @@ namespace PontoTech.Mvvm.Models
             Database = "PontoTech",
             Port = 3306,
             SslMode = MySqlSslMode.None
-            
-
         };
-
-
 
         public void InserirFuncionario(String nome, String cpf, string email, string senha)
         {
-
             var cmd = new MySqlCommand();
             MySqlConnection conexao = new MySqlConnection(strconexao.ConnectionString );
 
-
-
             try
             {
-                
                 conexao.Open();
                 cmd.Connection = conexao;
 
@@ -55,39 +47,63 @@ namespace PontoTech.Mvvm.Models
         }
         public int ValidarLogin(string email, string senha)
         {
-            
-            
-                MySqlConnection conn = new MySqlConnection(strconexao.ConnectionString);
+            MySqlConnection conn = new MySqlConnection(strconexao.ConnectionString);
 
-                string query = "SELECT * FROM PontoTech.Funcionario WHERE FuncionarioEmail=@email AND FuncionarioSenha=@Senha";
+            string query = "SELECT * FROM PontoTech.Funcionario WHERE FuncionarioEmail=@email AND FuncionarioSenha=@Senha";
 
-                using (MySqlCommand command = new MySqlCommand(query, conn))
+            using MySqlCommand command = new MySqlCommand(query, conn);
+            {
+                conn.Open();
+                command.Parameters.AddWithValue("@email", email);
+                command.Parameters.AddWithValue("@Senha", senha);
+
+                using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    conn.Open();
-                    command.Parameters.AddWithValue("@email", email);
-                    command.Parameters.AddWithValue("@Senha", senha);
-
-                    using (MySqlDataReader reader = command.ExecuteReader())
-                    {
-                        
-                    // Se o leitor tiver linhas, as credenciais são válidas
                     bool loginValido = reader.HasRows;
 
-                        // Adicione uma linha de log
-                        if (loginValido)
-                        {
-                            Console.WriteLine("Login bem-sucedido para o usuário: " + email);
-                            return 1;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Login falhou para o usuário: " + email);
-                            return -1;
-                        }
+                    if (loginValido)
+                    {
+                        Console.WriteLine("Login bem-sucedido para o usuário: " + email);
+                        return 1;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Login falhou para o usuário: " + email);
+                        return -1;
                     }
                 }
-          
+            }
         }
+        public int recuperarSenha(string email, string cpf,string senha) 
+        {
+            MySqlConnection conn = new MySqlConnection(strconexao.ConnectionString);
+            String query = "UPDATE Funcionario " +
+                           "SET FuncionarioSenha = @senha " +
+                           "WHERE FuncionarioCpf =@cpf AND FuncionarioEmail =@email;";
 
+            using MySqlCommand command = new MySqlCommand(query, conn);
+            {
+                conn.Open();
+                command.Parameters.AddWithValue("@senha",senha);
+                command.Parameters.AddWithValue("@cpf",cpf);
+                command.Parameters.AddWithValue("@email",email);
+
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    bool senhaTrocada = reader.HasRows;
+
+                    if (senhaTrocada)
+                    {
+                        Console.WriteLine("Senha alterada com sucesso para o usuário: " + email);
+                        return 1;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Senha alterada sem sucesso para o usuário: " + email);
+                        return -1;
+                    }
+                }
+            }
+        }
     }
 }
