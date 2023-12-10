@@ -10,7 +10,6 @@ namespace PontoTech.Mvvm.View
         {
             InitializeComponent();
             BindingContext = new CapturaPageViewModel();
-
         }
     }
 }
