@@ -1,18 +1,27 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
+using PontoTech.Mvvm.Models;
 using PontoTech.Mvvm.ViewModels;
 
 namespace PontoTech.Mvvm.View
 {
     public partial class PanelUserPage : ContentPage
-    {
+    {   
+        String cpf {  get; set; }
         public PanelUserPage()
         {
             InitializeComponent();
             BindingContext = new PanelUserPageViewModel();
             AtualizarHora();
-            
+        }
+
+        public PanelUserPage(string cpf) 
+        {
+            InitializeComponent();
+            BindingContext = new PanelUserPageViewModel();
+            AtualizarHora();
+            this.cpf = cpf;
         }
 
         private async void AtualizarHora()
@@ -26,24 +35,30 @@ namespace PontoTech.Mvvm.View
 
 
 
-        private async void EntradaFrame_Tapped(object sender, TappedEventArgs e)
+        private void EntradaFrame_Tapped(object sender, TappedEventArgs e)
         {
-            await App.Current.MainPage.Navigation.PushAsync(new CapturaPage());
+            BancoDadosContext bd = new BancoDadosContext();
+            bd.InserirEntrada(cpf,new Entradas("Entrada"));
+            App.Current.MainPage.DisplayAlert("Sucesso", "Seu ponto esta batido", "fechar");
+
         }
 
-        private async void PausaFrame_Tapped(object sender, TappedEventArgs e)
+        private  void PausaFrame_Tapped(object sender, TappedEventArgs e)
         {
-            await App.Current.MainPage.Navigation.PushAsync(new CapturaPage());
+            BancoDadosContext bd = new BancoDadosContext();
+            bd.InserirEntrada(cpf,new Entradas("Almoço"));
         }
 
-        private async void RetornoFrame_Tapped(object sender, TappedEventArgs e)
+        private  void RetornoFrame_Tapped(object sender, TappedEventArgs e)
         {
-            await App.Current.MainPage.Navigation.PushAsync(new CapturaPage());
+            BancoDadosContext bd = new BancoDadosContext();
+            bd.InserirEntrada(cpf,new Entradas("Retorno Do Alomoço"));
         }
 
-        private async void SaidaFrame_Tapped(object sender, TappedEventArgs e)
+        private  void SaidaFrame_Tapped(object sender, TappedEventArgs e)
         {
-            await App.Current.MainPage.Navigation.PushAsync(new CapturaPage());
+            BancoDadosContext bd = new BancoDadosContext();
+            bd.InserirEntrada(cpf,new Entradas("Saida"));
         }
     }
 }

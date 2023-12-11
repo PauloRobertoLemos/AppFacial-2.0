@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using Bumptech.Glide.Provider;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace PontoTech.Mvvm.Models
             }
             finally { conexao.Close(); }
         }
-        public int ValidarLogin(string email, string senha)
+        public string ValidarLogin(string email, string senha)
         {
             MySqlConnection conn = new MySqlConnection(strconexao.ConnectionString);
 
@@ -59,17 +60,17 @@ namespace PontoTech.Mvvm.Models
 
                 using (MySqlDataReader reader = command.ExecuteReader())
                 {
-                    bool loginValido = reader.HasRows;
+                    
 
-                    if (loginValido)
+                    if (reader.Read())
                     {
-                        Console.WriteLine("Login bem-sucedido para o usuário: " + email);
-                        return 1;
+                        
+                        return reader.GetString(1);
                     }
                     else
                     {
-                        Console.WriteLine("Login falhou para o usuário: " + email);
-                        return -1;
+                        
+                        return null;
                     }
                 }
             }
@@ -87,6 +88,7 @@ namespace PontoTech.Mvvm.Models
                 command.Parameters.AddWithValue("@senha",senha);
                 command.Parameters.AddWithValue("@cpf",cpf);
                 command.Parameters.AddWithValue("@email",email);
+                
 
                 using (MySqlDataReader reader = command.ExecuteReader())
                 {
@@ -104,6 +106,30 @@ namespace PontoTech.Mvvm.Models
                     }
                 }
             }
+        }
+        public void InserirEntrada(String cpf,Entradas entrada)
+        {
+            var cmd = new MySqlCommand();
+            MySqlConnection conexao = new MySqlConnection(strconexao.ConnectionString);
+
+            try
+            {
+                conexao.Open();
+                cmd.Connection = conexao;
+
+                cmd.CommandText = "INSERT INTO `PontoTech`.`Entradas` (`HoraDia`, `Marcador`, `Funcionario_FuncionarioCpf`) VALUES (@data, @marcador, @cpf);";
+                cmd.Prepare();
+
+                cmd.Parameters.AddWithValue("@marcador", entrada.Marcador);
+                cmd.Parameters.AddWithValue("@cpf",cpf);
+                cmd.Parameters.AddWithValue("@data",entrada.HoraDia);
+                cmd.ExecuteNonQuery();
+            }
+            catch (MySqlException ex)
+            {
+                App.Current.MainPage.DisplayAlert("SQL ERROR", ex.Message, "Fechar");
+            }
+            finally { conexao.Close(); }
         }
     }
 }

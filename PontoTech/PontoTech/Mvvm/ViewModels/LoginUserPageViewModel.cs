@@ -25,10 +25,11 @@ namespace PontoTech.Mvvm.ViewModels
             var db = new BancoDadosContext();
             try
             {
-               if (db.ValidarLogin(email,senha) == 1)
+                string cpf = db.ValidarLogin(email, senha);
+               if (!cpf.Equals(null))
                 {
-                    int i = db.ValidarLogin(email, senha);
-                     await App.Current.MainPage.Navigation.PushAsync(new PanelUserPage());
+                    
+                     await App.Current.MainPage.Navigation.PushAsync(new PanelUserPage(cpf));
                 }
                 else
                 {

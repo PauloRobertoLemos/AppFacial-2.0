@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Maui.Controls;
 using Plugin.Media;
 using Plugin.Media.Abstractions;
 
@@ -47,6 +48,7 @@ namespace PontoTech.Mvvm.ViewModels
                 // Por exemplo, exibir uma mensagem de erro para o usuário
             }
         }
+
 
     }
 }
